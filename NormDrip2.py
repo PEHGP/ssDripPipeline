@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 #coding=utf-8
 #做核基因组的归一化要去掉线粒体和叶绿体的基因组
 #chromd={"nucleus":"chrom_nucleus.size","mitochondria":"chrom_mit.size","chloroplast":"chrom_chl.size"},必需有一个nucleus键
@@ -127,7 +127,7 @@ class NormDrip(object):
 			realcovd[c]=self.covd[c]/float(based[c])
 		if if_split:
 			Fr2.write("split follow\n")
-			#self.SplitBam(bam)
+			self.SplitBam(bam)
 			for s in ["fwd","rev"]:
 				self.GetBdg(self.prefix+"_"+s+".bam",fragment,bin_size,self.prefix+"_"+s)
 				self.SplitBdg(self.prefix+"_"+s,False)
