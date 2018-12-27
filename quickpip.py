@@ -19,13 +19,13 @@ class BasePipLine(object):
 		os.system("rm -rf fwd1.bam fwd2.bam rev1.bam rev2.bam")
 	def CallPeak(self,GenomeSize,InputBamFile=self.Prefix+".sort.paird_dup.bam"):
 		os.system("macs2 callpeak -t %s -f BAMPE -g %s -n %s"%(InputBamFile,GenomeSize,self.Prefix))
-	def FormatPeak(self,FilterChromFile,PeakExcelFile=self.Prefix+"_peaks.xls",PeakBedFile=self.Prefix+"_peaks.bed"):
+	def FormatPeak(self,FilterChromFile,PeakExcelFile=self.Prefix+"_peaks.xls",PeakBedFile=self.Prefix+"_peaks.bed",Strand="+"):
 		AwkRegular=""
 		for x in open(FilterChromFile):
 			x=x.rstrip()
 			AwkRegular+="^"+x+"$"+"|"
 		AwkRegular=AwkRegular[:-1]
-		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF}' %s  > %s"%(AwkRegular,PeakExcelFile,PeakBedFile))
+		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF\"\\t.\\t%s\"}' %s  > %s"%(AwkRegular,Strand,PeakExcelFile,PeakBedFile))
 	def GetNormBw(self,BinSize,GenomeSize,IgnoreFile,InputBam=self.Prefix+".sort.paird_dup.bam",InputFwdBam=self.Prefix+"_fwd.bam",InputRevBam=self.Prefix+"_rev.bam",OutputBam=self.Prefix+"_nucleus_norm.bw",OutputFwdBam=self.Prefix+"_fwd_nucleus_norm.bw",OutputRevBam=self.Prefix+"_rev_nucleus_norm.bw"):  #[5,95] ?
 		IgnoreList=[x.rstrip() for x in open(IgnoreFile)]
 		Lines=os.popen("bamCoverage --extendReads -v -p %s -b %s -o %s --binSize %s --effectiveGenomeSize %s --normalizeUsing RPGC --ignoreForNormalization %s"%(self.Thread,InputBam,OutputBam,BinSize,GenomeSize," ".join(IgnoreList))).readlines()
@@ -67,21 +67,43 @@ class AnalysisPipLine(object):
 			Dr[s]=[TotalReads,Unique,Multiple,Overall,Dup,FragmentSize,PeakNum,FwdPeakNum,RevPeakNum]
 		df=pandas.DataFrame.from_dict(data=Dr,orient='index')
 		df.to_csv("%s_stat.xls"%self.Prefix,sep="\t")
-	def BwCorrelation(self,BwFileList,BinSize,IgnoreFile,Method,Type): 
+	def BwCorrelation(self,BwFileList,BinSize,IgnoreFile,Method,Type):  #Prefix may be need change
 		""""spearman, pearson
 		heatmap, scatterplot"""
 		IgnoreList=[x.rstrip() for x in open(IgnoreFile)]
 		os.system("multiBigwigSummary bins -p %s -b %s -o %s_results.npz --binSize %s --chromosomesToSkip %s --outRawCounts %s_BinCounts.xls"%(self.Thread," ".join(BwFileList),self.Prefix,BinSize," ".join(IgnoreList),self.Prefix))
 		os.system("plotCorrelation -in %s_results.npz --corMethod %s --skipZeros -p %s --plotTitle \"%s_correlation\" -o %s_%s.pdf --plotFileFormat pdf --removeOutliers --outFileCorMatrix %s_corr.tab"%(self.Prefix,Method,Type,self.Prefix,self.Prefix,Method,self.Prefix))
-	def FindMotif(self,GenomeSeq,BedFile):
-		pass
-	def PeakContentDistribution(self,): #genebody tss tts etc....
-		pass
-	def PeakLengthDistribution(self,):
-		pass
-	def MetaPlot(self,): #gene sense antisense 
-		pass
-	def BedCorrelation(self,): #permutation test,metaplot
+	def FindMotif(self,MyPrefix,GenomeSeq,BedFile,ChromSize,Strand="+",RepeatNum="10"):
+		RandomFileList=[]
+		for i in range(1,RepeatNum+1):
+			os.system("bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i -|awk -F'\t' '{print $1\"\t\"$2\"\t\"$3\"\t%s_random%s_\"NR\"\t.\t%s\"}'>%s_random%s.bed"%(BedFile,BedFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i))
+			os.system("bedtools getfasta -fi %s -bed %s_random%s.bed -s -name >%s_random%s.fasta"%(GenomeSeq,MyPrefix,i,MyPrefix,i))
+			RandomFileList.append("%s_random%s.fasta"%(RandomFileList,i))
+		os.system("bedtools getfasta -fi %s -bed %s -s -name >%s.fasta"%(GenomeSeq,BedFile,MyPrefix))
+		os.system("cat %s >%s_random_all.fasta"%(" ".join(RandomFileList),MyPrefix))
+		os.system("findMotifs.pl %s.fasta fasta %s_motif -fasta %s_random_all.fasta -len 8,10,12 -p %s -cache 50000"%(MyPrefix,MyPrefix,MyPrefix,self.Thread))
+	def PeakContentDistribution(self,MyPrefix,PeakBed,PromoterBed,TerminaterBed,GenebodyBed): #GenebodyBed can be gene.bed,need random bed
+		TotalNum=os.popen("wc -l %s"%PeakBed).readlines()[0].split()[0].rstrip()
+		ProNum=os.popen("bedtools intersect -wa -c -a %s -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed)).readlines()[0].rstrip()
+		TerNum=os.popen("bedtools intersect -v -a %s -b %s|bedtools intersect -wa -c -a - -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l "%(PeakBed,PromoterBed,TerminaterBed)).readlines()[0].rstrip()
+		BodyNum=os.popen("bedtools intersect -v -a %s -b %s|bedtools intersect -v -a - -b %s|bedtools intersect -wa -c -a - -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed,TerminaterBed,GenebodyBed)).readlines()[0].rstrip()
+		InterNum=int(TotalNum)-int(ProNum)-int(TerNum)-int(BodyNum)
+		#reldist,jaccard,fisher
+		return ProNum,TerNum,BodyNum,InterNum
+	def PeakLengthDistribution(self,PeakBed):
+		return map(lambda x:int(x[2])-int(x[1])+1,[x.rstrip().split("\t") for x in open(PeakBed)])
+	def SenseAntisense(self,MyPrefix,BedFile,FwdBw,RevBw,Extend): #gene sense antisense 
+		os.system("grep '+$' %s >%s_positive.bed"%(BedFile,MyPrefix))
+		os.system("grep '\-$' %s >%s_negative.bed"%(BedFile,MyPrefix))
+		BwFiled={"fwd":FwdBw,"rev":RevBw}
+		for dr in ["fwd","rev"]:
+			for zf in ["negative","positive"]:
+				os.system("computeMatrix scale-regions -p 20 -S %s -R %s_%s.bed -bs 5 -b %s -a %s --skipZeros --outFileName %s_%s_%s.gz"%(BwFiled[dr],MyPrefix,zf,Extend,Extend,MyPrefix,zf,dr))
+		os.system("computeMatrixOperations rbind -m %s_positive_rev.gz %s_negative_fwd.gz -o %s_antisense.gz"%(MyPrefix,MyPrefix,MyPrefix))
+		os.system("computeMatrixOperations rbind -m %s_negative_rev.gz %s_positive_fwd.gz -o %s_sense.gz"%(MyPrefix,MyPrefix,MyPrefix))
+	def BedCorrelation(self,BedFile,TargetBedFile,BwFile): #permutation test,metaplot
+		#reldist,jaccard,fisher
+	def GetGenomeContentBedFile(self,): #genebody tss, tts,intergenetic
 		pass
 	def GetNoiseqFile(self,):
 		pass
