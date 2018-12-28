@@ -101,9 +101,15 @@ class AnalysisPipLine(object):
 				os.system("computeMatrix scale-regions -p 20 -S %s -R %s_%s.bed -bs 5 -b %s -a %s --skipZeros --outFileName %s_%s_%s.gz"%(BwFiled[dr],MyPrefix,zf,Extend,Extend,MyPrefix,zf,dr))
 		os.system("computeMatrixOperations rbind -m %s_positive_rev.gz %s_negative_fwd.gz -o %s_antisense.gz"%(MyPrefix,MyPrefix,MyPrefix))
 		os.system("computeMatrixOperations rbind -m %s_negative_rev.gz %s_positive_fwd.gz -o %s_sense.gz"%(MyPrefix,MyPrefix,MyPrefix))
-	def BedCorrelation(self,BedFile,TargetBedFile,BwFile): #permutation test,metaplot
+	def BedCorrelation(self,MyPrefix,QueryBed,TargetBed,ChromSize,BwFile=""): #permutation test,metaplot
+		os.system("")
+		os.system("bedtools fisher -a %s -b %s -g %s >%s_fisher.txt"%(QueryBed,TargetBed,ChromSize,MyPrefix))
+		os.system("bedtools jaccard -a %s -b %s >%s_jaccard.txt"%(QueryBed,TargetBed,MyPrefix))
+		os.system("bedtools reldist -a %s -b %s >%s_reldist.txt"%(QueryBed,TargetBed,MyPrefix)) #-detail
 		#reldist,jaccard,fisher
 	def GetGenomeContentBedFile(self,): #genebody tss, tts,intergenetic
+		pass
+	def GetGCSkewBwAndGz(self,):
 		pass
 	def GetNoiseqFile(self,):
 		pass
