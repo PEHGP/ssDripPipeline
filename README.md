@@ -1,6 +1,6 @@
 # DripPipline
 ## Introduction
-....
+This pipline is used to analyze ssDRIP-seq data.
 ## Get Started
 ### Requires:
 - [python](http://www.python.org/downloads/)>=2.6(not support python3.0)
