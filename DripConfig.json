@@ -1,0 +1,17 @@
+{
+	"ProjectName":"test",
+	"Target":"target",
+	"GeomeIndex":"",
+	"GenomeSize":"12345",
+	"Thread":"10",
+	"FilterChromFile":"filter.txt",
+	"BinSize":"5",
+	"CorrelationMethod":"spearman",
+	"RepeatNum":"10",
+	"ChromSize":"file.txt",
+	"GenomeFastaFile":"",
+	"ControlSample":"",
+	"GeneBeb":"",
+	"Extend":""
+
+}
