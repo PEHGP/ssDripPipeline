@@ -26,7 +26,8 @@ setup(
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics'],
     install_requires=[
-        "numpy >= 1.9.0",
+        "deepTools >= 3.1.2",
+        "pandas >= 0.18.1",
     ],
     zip_safe=True,
 )
