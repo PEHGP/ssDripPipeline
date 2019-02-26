@@ -67,7 +67,7 @@ def DownstreamAnalysis(ConfigDic):
 		PeakContentDic[s+"_rev_random"]=[ProNum,TerNum,BodyNum,InterNum]
 	df=pandas.DataFrame.from_dict(data=PeakContentDic,orient='index')
 	df.to_csv("%s_peaks_content_distribution.xls"%ConfigDic["ProjectName"],sep="\t",header=["ProNum","TerNum","BodyNum","InterNum"],index_label="Sample")
-	p.PeakLengthDistribution()
+	#p.PeakLengthDistribution()
 def Main(ConfigFile,SubCommand):
 	ConfigDic=json.load(open(ConfigFile))
 	if SubCommand=="BaseAnalysis":
@@ -80,4 +80,4 @@ def Main(ConfigFile,SubCommand):
 if __name__ == '__main__':
 	ConfigFile=sys.argv[1]
 	SubCommand=sys.argv[2] #BaseAnalysis ,DownstreamAnalysis,AllPip
-	Main(ConfigFile)
+	Main(ConfigFile,SubCommand)
