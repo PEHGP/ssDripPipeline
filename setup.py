@@ -5,10 +5,11 @@ def get_version():
         f = open("piplines/_version.py")
     except EnvironmentError:
         return None
-    for line in f.readlines():
-        mo = re.match("__version__ = '([^']+)'", line)
-        if mo:
-            ver = mo.group(1)
+    for line in f:
+    	line=line.rstrip()
+        m = re.match("__version__ = '([^']+)'", line)
+        if m:
+            ver = m.group(1)
             return ver
     return None
 setup(
