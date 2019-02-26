@@ -15,6 +15,7 @@ setup(
     name='DripPipLine',
     version=get_version(),
     author='LiKuan',
+    author_email="396777306@qq.com",
     packages=find_packages(),
     scripts=['bin/ssDRIPSeqAnalysis.py',],
     #include_package_data=True,
