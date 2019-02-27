@@ -1,18 +1,19 @@
 {
 	"ProjectName":"test",
 	"Target":"target",
-	"GeomeIndex":"",
+	"SeqDataPath":"/data/yeat/cleandata/",
+	"GeomeIndex":"/data/yeast/genome/GenomeIndex",
 	"GenomeSize":"12345",
 	"Thread":"10",
-	"FilterChromFile":"filter.txt",
+	"FilterChromFile":"/data/yeast/Analysis/filter.txt",
 	"BinSize":"5",
 	"CorrelationMethod":"spearman",
 	"RepeatNum":"10",
-	"ChromSize":"file.txt",
-	"GenomeFastaFile":"",
+	"ChromSize":"/data/yeast/Analysis/chrom.size",
+	"GenomeFastaFile":"/data/yeast/genome/Genome.fasta",
 	"ControlSample":"",
-	"GeneBeb":"",
-	"PicardPath":"",
+	"GeneBeb":"/data/yeast/genome/gene.bed",
+	"PicardPath":"/data/serverSoft/serverSoft/picard_new1.123",
 	"Extend":""
 
 }
