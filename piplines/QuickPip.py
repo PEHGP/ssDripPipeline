@@ -7,12 +7,12 @@ class BasePipLine(object):
 		self.Thread=Thread
 	def Align(self,Left,Right,GenomeIndex):
 		os.system("bowtie2 --local --phred33 -p %s -t -x %s -1 %s -2 %s 2>%s_align.info|samtools view -bS -1 |samtools sort -@ %s -m 5G -l 9 -o %s.sort.bam"%(self.Thread,GenomeIndex,Left,Right,self.Prefix,self.Thread,self.Prefix))
-	def ReomveDuplication(self,InputBamFile="",OutputBamFile=""):
+	def ReomveDuplication(self,PicardPath,InputBamFile="",OutputBamFile=""):
 		if not InputBamFile:
 			InputBamFile=self.Prefix+".sort.bam"
 		if not OutputBamFile:
 			OutputBamFile=self.Prefix+".sort.paird_dup.bam"
-		os.system("java -jar picard.jar MarkDuplicates REMOVE_DUPLICATES=true METRICS_FILE=%s.matrix INPUT=%s OUTPUT=%s"%(self.Prefix,InputBamFile,OutputBamFile))
+		os.system("java -jar %s/picard.jar MarkDuplicates REMOVE_DUPLICATES=true METRICS_FILE=%s.matrix INPUT=%s OUTPUT=%s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
 	def SplitStrand(self,InputBamFile=""):
 		if not InputBamFile:
 			InputBamFile=self.Prefix+".sort.paird_dup.bam"
@@ -39,7 +39,7 @@ class BasePipLine(object):
 			x=x.rstrip()
 			AwkRegular+="^"+x+"$"+"|"
 		AwkRegular=AwkRegular[:-1]
-		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF\"\\t.\\t%s\"}' %s  > %s"%(AwkRegular,Strand,PeakExcelFile,PeakBedFile))
+		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF\"\\t.\\t%s\"}' %s  > %s"%(AwkRegular,Strand,PeakExcelFile,PeakBedFile)) #need change,only use python
 	def GetNormBw(self,BinSize,GenomeSize,IgnoreFile,InputBam="",InputFwdBam="",InputRevBam="",OutputBw="",OutputFwdBw="",OutputRevBw=""):  #[5,95] ?
 		if not InputBam:
 			InputBam=self.Prefix+".sort.paird_dup.bam"
