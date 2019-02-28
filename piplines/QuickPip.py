@@ -37,10 +37,19 @@ class BasePipLine(object):
 			PeakExcelFile=self.Prefix+"_peaks.xls"
 		if not PeakBedFile:
 			PeakBedFile=self.Prefix+"_peaks.bed"
-		AwkRegular=""
-		for x in open(FilterChromFile):
+		Fr=open(PeakBedFile,"w")
+		FilterChromList=[x.rstrip() for x in open(FilterChromFile)]
+		for x in open(PeakExcelFile):
 			x=x.rstrip()
-			AwkRegular+="^"+x+"$"+"|"
+			if x.startswith("#"):
+				continue
+			l=x.split("\t")
+			if l[0] in FilterChromList:
+				continue
+			if l[0]=="chr" and l[1]=="start" and l[2]=="end":
+				continue
+			Fr.write(l[0]+"\t"+l[1]+"\t"+l[2]+"\t"+l[-1]+"\t.\t"+Strand+"\n")
+		Fr.close()
 		AwkRegular=AwkRegular[:-1]
 		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF\"\\t.\\t%s\"}' %s  > %s"%(AwkRegular,Strand,PeakExcelFile,PeakBedFile)) #need change,only use python
 	def GetNormBw(self,BinSize,GenomeSize,IgnoreFile,InputBam="",InputFwdBam="",InputRevBam="",OutputBw="",OutputFwdBw="",OutputRevBw=""):  #[5,95] ?
