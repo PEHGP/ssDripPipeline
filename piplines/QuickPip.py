@@ -12,7 +12,7 @@ class BasePipLine(object):
 			InputBamFile=self.Prefix+".sort.bam"
 		if not OutputBamFile:
 			OutputBamFile=self.Prefix+".sort.paird_dup.bam"
-		os.system("java -jar %s/picard.jar MarkDuplicates -REMOVE_DUPLICATES true -METRICS_FILE %s.matrix -INPUT %s -OUTPUT %s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
+		os.system("java -jar %s/picard.jar MarkDuplicates REMOVE_DUPLICATES=true METRICS_FILE=%s.matrix INPUT=%s OUTPUT=%s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
 		os.system("samtools index %s"%OutputBamFile)
 	def SplitStrand(self,InputBamFile=""):
 		if not InputBamFile:
