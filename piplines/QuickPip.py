@@ -13,6 +13,7 @@ class BasePipLine(object):
 		if not OutputBamFile:
 			OutputBamFile=self.Prefix+".sort.paird_dup.bam"
 		os.system("java -jar %s/picard.jar MarkDuplicates REMOVE_DUPLICATES=true METRICS_FILE=%s.matrix INPUT=%s OUTPUT=%s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
+		os.system("samtools index %s"%OutputBamFile)
 	def SplitStrand(self,InputBamFile=""):
 		if not InputBamFile:
 			InputBamFile=self.Prefix+".sort.paird_dup.bam"
@@ -23,6 +24,8 @@ class BasePipLine(object):
 		os.system("samtools view -b -f 64 -F 16 %s > rev2.bam"%(InputBamFile))
 		os.system("samtools merge -f %s_rev.bam rev1.bam rev2.bam"%(self.Prefix))
 		os.system("rm -rf fwd1.bam fwd2.bam rev1.bam rev2.bam")
+		os.system("samtools index %s_fwd.bam"%(self.Prefix))
+		os.system("samtools index %s_rev.bam"%(self.Prefix))
 	def CallPeak(self,GenomeSize,MyPrefix="",InputBamFile=""):
 		if not InputBamFile:
 			InputBamFile=self.Prefix+".sort.paird_dup.bam"
