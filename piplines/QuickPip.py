@@ -12,7 +12,7 @@ class BasePipLine(object):
 			InputBamFile=self.Prefix+".sort.bam"
 		if not OutputBamFile:
 			OutputBamFile=self.Prefix+".sort.paird_dup.bam"
-		os.system("java -jar %s/picard.jar MarkDuplicates REMOVE_DUPLICATES=true METRICS_FILE=%s.matrix INPUT=%s OUTPUT=%s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
+		os.system("java -jar %s/picard.jar MarkDuplicates -REMOVE_DUPLICATES true -METRICS_FILE %s.matrix -INPUT %s -OUTPUT %s"%(PicardPath,self.Prefix,InputBamFile,OutputBamFile))
 		os.system("samtools index %s"%OutputBamFile)
 	def SplitStrand(self,InputBamFile=""):
 		if not InputBamFile:
@@ -41,7 +41,7 @@ class BasePipLine(object):
 		FilterChromList=[x.rstrip() for x in open(FilterChromFile)]
 		for x in open(PeakExcelFile):
 			x=x.rstrip()
-			if x.startswith("#"):
+			if x.startswith("#") or x=="":
 				continue
 			l=x.split("\t")
 			if l[0] in FilterChromList:
@@ -50,8 +50,6 @@ class BasePipLine(object):
 				continue
 			Fr.write(l[0]+"\t"+l[1]+"\t"+l[2]+"\t"+l[-1]+"\t.\t"+Strand+"\n")
 		Fr.close()
-		AwkRegular=AwkRegular[:-1]
-		os.system("awk -F'\\t' '$0!~/^#/&&$0!=\"\"&&$1!~/%s/{print $1\"\\t\"$2\"\\t\"$3\"\\t\"$NF\"\\t.\\t%s\"}' %s  > %s"%(AwkRegular,Strand,PeakExcelFile,PeakBedFile)) #need change,only use python
 	def GetNormBw(self,BinSize,GenomeSize,IgnoreFile,InputBam="",InputFwdBam="",InputRevBam="",OutputBw="",OutputFwdBw="",OutputRevBw=""):  #[5,95] ?
 		if not InputBam:
 			InputBam=self.Prefix+".sort.paird_dup.bam"
