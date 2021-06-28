@@ -13,7 +13,9 @@
 	"GenomeFastaFile":"/data/yeast/genome/Genome.fasta",
 	"ControlSample":"",
 	"GeneBeb":"/data/yeast/genome/gene.bed",
-	"PicardPath":"/data/serverSoft/serverSoft/picard_new1.123",
-	"Extend":""
-
+	"Extend":"",
+	"SpikeNameList":["Ecoli"],
+	"Debug":"False",
+	"Win":"100",
+	"Step":"50"
 }
