@@ -144,7 +144,7 @@ class BasePipLine(object):
 				Strand="+"
 			elif s=="rev":
 				Strand="-"
-			cmd1="bamCoverage --extendReads -v -p %s -b %s_%s.bam -o %s_%s.bw --binSize 1 --ignoreForNormalization %s"%(self.Thread,self.Prefix,s,self.Prefix,s," ".join(IgnoreList))
+			cmd1="bamCoverage -v -p %s -b %s_%s.bam -o %s_%s.bw --binSize 1 --ignoreForNormalization %s"%(self.Thread,self.Prefix,s,self.Prefix,s," ".join(IgnoreList))
 			os.system(cmd1)
 			self.ShFr.write(cmd1+"\n")
 			cmd2="computeMatrix scale-regions -p %s -S %s_%s.bw -R %s -bs 5 -b %s -a %s --skipZeros --outFileName %s_%s.gz"%(self.Thread,self.Prefix,s,RandomBed,Extend,Extend,self.Prefix,s)
@@ -196,6 +196,7 @@ class AnalysisPipLine(object):
 			self.ShFr=open(self.Prefix+"_ana.sh","a")
 	def BasicStatistics(self,SampleDic): #dict={"sample":["align.info","dup.matrix","peaks.xls","peaks.bed","fwd_peaks.bed","rev_peaks.bed"]}
 		Dr={}
+		Sl=[]
 		for s in SampleDic:
 			Lines=open(SampleDic[s][0]).read()
 			m=re.search("(.*?) reads; of these:\n",Lines)
@@ -220,8 +221,12 @@ class AnalysisPipLine(object):
 				FwdPeakNum="Nan"
 				RevPeakNum="Nan"
 			Dr[s]=[TotalReads,Unique,Multiple,Overall,Dup,FragmentSize,PeakNum,FwdPeakNum,RevPeakNum]
-		df=pandas.DataFrame.from_dict(data=Dr,orient='index')
-		df.to_csv("%s_stat.xls"%self.Prefix,sep="\t",header=["TotalReads","UniqueReads","MultipleReads","OverallReads","Duplication","FragmentSize","PeakNum","FwdPeakNum","RevPeakNum"],index_label="Sample")
+			ScaleHeader=open(SampleDic[s][6]).readlines()[0].rstrip().split("\t")
+			Sl.append(open(SampleDic[s][6]).readlines()[1].rstrip().split("\t"))
+		DfScale=pandas.DataFrame(Sl,columns=ScaleHeader)
+		DfScale.to_csv("%s_bwscale.xls"%self.Prefix,sep="\t",index=False)
+		DfStat=pandas.DataFrame.from_dict(data=Dr,orient='index')
+		DfStat.to_csv("%s_stat.xls"%self.Prefix,sep="\t",header=["TotalReads","UniqueReads","MultipleReads","OverallReads","Duplication","FragmentSize","PeakNum","FwdPeakNum","RevPeakNum"],index_label="Sample")
 	def BwCorrelation(self,BwFileList,BinSize,IgnoreFile,Method,Type,MyPrefix="",OnlyPlot=False):  #Prefix may be need change
 		""""spearman, pearson
 		heatmap, scatterplot"""
