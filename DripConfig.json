@@ -7,7 +7,6 @@
 	"Thread":"10",
 	"FilterChromFile":"/data/yeast/Analysis/filter.txt",
 	"BinSize":"5",
-	"CorrelationMethod":"spearman",
 	"RepeatNum":"10",
 	"ChromSize":"/data/yeast/Analysis/chrom.size",
 	"GenomeFastaFile":"/data/yeast/genome/Genome.fasta",
