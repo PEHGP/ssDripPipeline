@@ -56,7 +56,7 @@ def CheckJson(ConfigDic):
 		logging.info("Duplicate fastq file name in %s."%ConfigDic["Target"])
 		sys.exit()
 	for g in GroupDic:
-		if len(GroupDic[g])==1:
+		if len(set(GroupDic[g]))==1:
 			print("Group %s has no repeat samples."%g)
 			logging.info("Group %s has no repeat samples."%g)
 			sys.exit()
