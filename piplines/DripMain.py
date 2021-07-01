@@ -99,7 +99,7 @@ def BaseAnalysis(ConfigDic):
 			p.AfterMath()
 		os.chdir(Path)
 	pa=AnalysisPipLine(ConfigDic["ProjectName"],ConfigDic["Thread"])
-	pa.BasicStatistics(SampleDic)
+	pa.BasicStatistics(SampleDic,ConfigDic["GenomeSize"])
 def DeseqAnalysis(ConfigDic,FilePath="",SpikeScaleDic={}): #FilePath include peak bam file
 	ExistsDic=CheckContinue(ConfigDic)
 	PeakDic={}

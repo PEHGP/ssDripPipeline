@@ -194,7 +194,7 @@ class AnalysisPipLine(object):
 			self.ShFr=open(self.Prefix+"_ana.sh","w")
 		else:
 			self.ShFr=open(self.Prefix+"_ana.sh","a")
-	def BasicStatistics(self,SampleDic): #dict={"sample":["align.info","dup.matrix","peaks.xls","peaks.bed","fwd_peaks.bed","rev_peaks.bed"]}
+	def BasicStatistics(self,SampleDic,GenomeSize): #dict={"sample":["align.info","dup.matrix","peaks.xls","peaks.bed","fwd_peaks.bed","rev_peaks.bed"]}
 		Dr={}
 		Sl=[]
 		for s in SampleDic:
@@ -213,20 +213,29 @@ class AnalysisPipLine(object):
 				m=re.search("# fragment size is determined as (.*?) bps\n",Lines)
 				FragmentSize=m.group(1)
 				PeakNum=len(open(SampleDic[s][3]).readlines())
+				PeakPercent=os.popen("awk '{sum+=$3-$2}END{print sum}' %s"%(SampleDic[s][3])).readlines()[0].rstrip()
+				PeakPercent=round(int(PeakPercent)/int(GenomeSize),4)
 				FwdPeakNum=len(open(SampleDic[s][4]).readlines())
+				FwdPeakPercent=os.popen("awk '{sum+=$3-$2}END{print sum}' %s"%(SampleDic[s][4])).readlines()[0].rstrip()
+				FwdPeakPercent=round(int(FwdPeakPercent)/int(GenomeSize),4)
 				RevPeakNum=len(open(SampleDic[s][5]).readlines())
+				RevPeakPercent=os.popen("awk '{sum+=$3-$2}END{print sum}' %s"%(SampleDic[s][5])).readlines()[0].rstrip()
+				RevPeakPercent=round(int(RevPeakPercent)/int(GenomeSize),4)
 			else:
 				FragmentSize="Nan"
 				PeakNum="Nan"
 				FwdPeakNum="Nan"
 				RevPeakNum="Nan"
-			Dr[s]=[TotalReads,Unique,Multiple,Overall,Dup,FragmentSize,PeakNum,FwdPeakNum,RevPeakNum]
+				PeakPercent="Nan"
+				FwdPeakPercent="Nan"
+				RevPeakPercent="Nan"
+			Dr[s]=[TotalReads,Unique,Multiple,Overall,Dup,FragmentSize,PeakNum,FwdPeakNum,RevPeakNum,PeakPercent,FwdPeakPercent,RevPeakPercent]
 			ScaleHeader=open(SampleDic[s][6]).readlines()[0].rstrip().split("\t")
 			Sl.append(open(SampleDic[s][6]).readlines()[1].rstrip().split("\t"))
 		DfScale=pandas.DataFrame(Sl,columns=ScaleHeader)
 		DfScale.to_csv("%s_bwscale.xls"%self.Prefix,sep="\t",index=False)
 		DfStat=pandas.DataFrame.from_dict(data=Dr,orient='index')
-		DfStat.to_csv("%s_stat.xls"%self.Prefix,sep="\t",header=["TotalReads","UniqueReads","MultipleReads","OverallReads","Duplication","FragmentSize","PeakNum","FwdPeakNum","RevPeakNum"],index_label="Sample")
+		DfStat.to_csv("%s_stat.xls"%self.Prefix,sep="\t",header=["TotalReads","UniqueReads","MultipleReads","OverallReads","Duplication","FragmentSize","PeakNum","FwdPeakNum","RevPeakNum","PeakPercent","FwdPeakPercent","RevPeakPercent"],index_label="Sample")
 	def BwCorrelation(self,BwFileList,BinSize,IgnoreFile,Method,Type,MyPrefix="",OnlyPlot=False):  #Prefix may be need change
 		""""spearman, pearson
 		heatmap, scatterplot"""
