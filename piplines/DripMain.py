@@ -25,6 +25,41 @@ def CheckJson(ConfigDic):
 			M="%s file is not exists."
 			logging.info(M)
 			sys.exit()
+	RL=[]
+	RowNumber=0
+	ColNumberList=[]
+	GroupDic=collections.defaultdict(list)
+	for x in open(ConfigDic["Target"]):
+		x=x.rstrip()
+		if not x:
+			continue
+		RowNumber+=1
+		l=x.split("\t")
+		Rl.append(l[2])
+		Rl.append(l[3])
+		if len(l)==7:
+			Rl.append(l[5])
+			Rl.append(l[6])
+		GroupDic[l[0]].append(l[1])
+		ColNumberList.append(len(l))
+	if len(set(ColNumberList))!=1:
+		print("Inconsistent columns.")
+		logging.info("Inconsistent columns.")
+		sys.exit()
+	ColNumber=list(set(ColNumberList))[0]
+	if ColNumber==7 and len(set(Rl))!=RowNumber*4:
+		print("Duplicate fastq file name in %s."%ConfigDic["Target"])
+		logging.info("Duplicate fastq file name in %s."%ConfigDic["Target"])
+		sys.exit()
+	elif ColNumber==4 and len(set(Rl))!=RowNumber*2:
+		print("Duplicate fastq file name in %s."%ConfigDic["Target"])
+		logging.info("Duplicate fastq file name in %s."%ConfigDic["Target"])
+		sys.exit()
+	for g in GroupDic:
+		if len(GroupDic[g])==1:
+			print("Group %s has no repeat samples."%g)
+			logging.info("Group %s has no repeat samples."%g)
+			sys.exit()
 def CheckContinue(ConfigDic): #Add new analysis, need to change here
 	ExistsDic={"BaseAnalysis":[],"DeseqAnalysis":[],"DownstreamAnalysis":[]}
 	for i,x in enumerate(open(ConfigDic["Target"])):
