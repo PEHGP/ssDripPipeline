@@ -126,7 +126,7 @@ def BaseAnalysis(ConfigDic):
 				FrScale.write(Fm+"\n")
 				p2.AfterMath()
 			else:
-				Scale1x=p.GetRandomRegionNormBw(ConfigDic["FilterChromFile"],ConfigDic["MetaplotExtend"],ConfigDic["GenomeSize"],ConfigDic["RepeatNum"])
+				Scale1x=p.GetRandomRegionNormBw(ConfigDic["FilterChromFile"],ConfigDic["MetaplotExtend"],ConfigDic["GenomeSize"],int(ConfigDic["RepeatNum"]))
 				#Scale1x=p.Get1XNormBw(ConfigDic["BinSize"],ConfigDic["GenomeSize"],ConfigDic["FilterChromFile"])
 				FrScale.write("sample\t1x_scale\n")
 				FrScale.write(Sample+"\t"+str(Scale1x)+"\n")
@@ -339,8 +339,8 @@ def DownstreamAnalysis(ConfigDic):
 			p.GetSkewGz(GCSkewBw,ATSkewBw,"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["MetaplotExtend"],s+"_rev")
 		if not "motif" in ExistsDic["DownstreamAnalysis"]:
 			os.chdir(Path+"/%s_analysis/motif/"%ConfigDic["ProjectName"])
-			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_fwd",Strand="+",RepeatNum=ConfigDic["RepeatNum"])
-			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_rev",Strand="-",RepeatNum=ConfigDic["RepeatNum"])
+			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_fwd",Strand="+",RepeatNum=int(ConfigDic["RepeatNum"]))
+			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_rev",Strand="-",RepeatNum=int(ConfigDic["RepeatNum"]))
 		os.chdir(Path)
 	if not "peaks_content_distribution" in ExistsDic["DownstreamAnalysis"]:
 		df=pandas.DataFrame.from_dict(data=PeakContentDic,orient='index')
