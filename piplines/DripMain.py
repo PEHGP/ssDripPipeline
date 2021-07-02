@@ -25,7 +25,7 @@ def CheckJson(ConfigDic):
 			M="%s file is not exists."
 			logging.info(M)
 			sys.exit()
-	RL=[]
+	Rl=[]
 	RowNumber=0
 	ColNumberList=[]
 	GroupDic=collections.defaultdict(list)
@@ -94,7 +94,7 @@ def BaseAnalysis(ConfigDic):
 			print("target error")
 			logging.error("target error")
 			sys.exit()
-		SampleDic[Sample]=["%s/%s/%s_align.info"%(Path,Sample,Sample),"%s/%s/%s.matrix"%(Path,Sample,Sample),"%s/%s/%s_peaks.xls"%(Path,Sample,Sample),"%s/%s/%s_peaks.bed"%(Path,Sample,Sample),"%s/%s/%s_fwd_peaks.bed"%(Path,Sample,Sample),"%s/%s/%s_rev_peaks.bed"%(Path,Sample,Sample),Sample+"_scale.xls"]
+		SampleDic[Sample]=["%s/%s/%s_align.info"%(Path,Sample,Sample),"%s/%s/%s.matrix"%(Path,Sample,Sample),"%s/%s/%s_peaks.xls"%(Path,Sample,Sample),"%s/%s/%s_peaks.bed"%(Path,Sample,Sample),"%s/%s/%s_fwd_peaks.bed"%(Path,Sample,Sample),"%s/%s/%s_rev_peaks.bed"%(Path,Sample,Sample),"%s/%s/%s_scale.xls"%(Path,Sample,Sample)]
 		if Sample in ExistsDic["BaseAnalysis"]:
 			logging.info("%s folder already exists. This sample will not be analyzed. If you want to analyze this sample, please delete the folder of this sample."%Sample)
 		else:
@@ -126,7 +126,7 @@ def BaseAnalysis(ConfigDic):
 				FrScale.write(Fm+"\n")
 				p2.AfterMath()
 			else:
-				Scale1x=p.GetRandomRegionNormBw(ConfigDic["FilterChromFile"],ConfigDic["MetaplotExtend"],ConfigDic["GenomeSize"],int(ConfigDic["RepeatNum"]))
+				Scale1x=p.GetRandomRegionNormBw(ConfigDic["FilterChromFile"],ConfigDic["MetaplotExtend"],ConfigDic["ChromSize"],int(ConfigDic["RepeatNum"]))
 				#Scale1x=p.Get1XNormBw(ConfigDic["BinSize"],ConfigDic["GenomeSize"],ConfigDic["FilterChromFile"])
 				FrScale.write("sample\t1x_scale\n")
 				FrScale.write(Sample+"\t"+str(Scale1x)+"\n")

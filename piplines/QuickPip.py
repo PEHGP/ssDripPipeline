@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys,os,pandas,collections,re,itertools,math
 from Bio import SeqIO
+import numpy as np
 class BasePipLine(object):
 	"""decstring for BasePipLine"""
 	def __init__(self, Prefix,Thread):
@@ -131,8 +132,8 @@ class BasePipLine(object):
 	def GetRandomRegionNormBw(self,IgnoreFile,Extend,ChromSize,RepeatNum): #not for spike-in
 		FwdPeak="%s_fwd_peaks.bed"%self.Prefix
 		RevPeak="%s_rev_peaks.bed"%self.Prefix
-		self.RandomBed(self,FwdPeak,ChromSize,Strand="+",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_fwd",ExcludeFile="")
-		self.RandomBed(self,RevPeak,ChromSize,Strand="-",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_rev",ExcludeFile="")
+		self.GetRandomBed(FwdPeak,ChromSize,Strand="+",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_fwd",ExcludeFile="")
+		self.GetRandomBed(RevPeak,ChromSize,Strand="-",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_rev",ExcludeFile="")
 		cmd="cat %s_random_all.bed %s_random_all.bed >%s_random_all.bed"%(self.Prefix+"_fwd",self.Prefix+"_rev",self.Prefix)
 		os.system(cmd)
 		self.ShFr.write(cmd+"\n")
@@ -152,7 +153,7 @@ class BasePipLine(object):
 			self.ShFr.write(cmd2+"\n")
 			df=pandas.read_csv("%s_%s.gz"%(self.Prefix,s),sep="\t",header=None,index_col=None,compression="gzip",skiprows=1)
 			for i in df.columns[6:]:
-				RL+=list(df.ix[0:,i].dropna())
+				RL+=list(df.iloc[0:,i].dropna())
 		RL=np.array(RL)
 		n95=np.percentile(RL,95)
 		n5=np.percentile(RL,5)
