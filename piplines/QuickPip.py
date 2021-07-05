@@ -209,7 +209,7 @@ class AnalysisPipLine(object):
 			m=re.search("(.*?) overall alignment rate\n",Lines)
 			Overall=m.group(1)
 			Dup=open(SampleDic[s][1]).readlines()[7].rstrip().split("\t")[-2]
-			if len(SampleDic[s])==6:
+			if len(SampleDic[s])==7:
 				Lines=open(SampleDic[s][2]).read()
 				m=re.search("# fragment size is determined as (.*?) bps\n",Lines)
 				FragmentSize=m.group(1)
