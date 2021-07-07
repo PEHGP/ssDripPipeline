@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys,os,pandas,collections,re,itertools,math
+import sys,os,pandas,collections,re,itertools,math,subprocess
 from Bio import SeqIO
 import numpy as np
 class BasePipLine(object):
@@ -132,8 +132,11 @@ class BasePipLine(object):
 	def GetRandomRegionNormBw(self,IgnoreFile,Extend,ChromSize,RepeatNum): #not for spike-in
 		FwdPeak="%s_fwd_peaks.bed"%self.Prefix
 		RevPeak="%s_rev_peaks.bed"%self.Prefix
-		self.GetRandomBed(FwdPeak,ChromSize,Strand="+",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_fwd",ExcludeFile="")
-		self.GetRandomBed(RevPeak,ChromSize,Strand="-",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_rev",ExcludeFile="")
+		CmdList1=self.GetRandomBed(FwdPeak,ChromSize,Strand="+",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_fwd",ExcludeFile="")
+		CmdList2=self.GetRandomBed(RevPeak,ChromSize,Strand="-",RepeatNum=RepeatNum,MyPrefix=self.Prefix+"_rev",ExcludeFile="")
+		CmdList=CmdList1+CmdList2
+		for c in CmdList:
+			self.ShFr.write(c+"\n")
 		cmd="cat %s_random_all.bed %s_random_all.bed >%s_random_all.bed"%(self.Prefix+"_fwd",self.Prefix+"_rev",self.Prefix)
 		os.system(cmd)
 		self.ShFr.write(cmd+"\n")
@@ -167,21 +170,26 @@ class BasePipLine(object):
 		os.system(cmd4)
 		self.ShFr.write(cmd4+"\n")
 		return scale
-	def GetRandomBed(self,BedFile,ChromSize,Strand="+",RepeatNum=1,MyPrefix="",ExcludeFile=""):
-		if not MyPrefix:
-			MyPrefix=self.Prefix
+	@staticmethod
+	def GetRandomBed(BedFile,ChromSize,Strand="+",RepeatNum=1,MyPrefix="",ExcludeFile="",):
+		#if not MyPrefix:
+		#	MyPrefix=self.Prefix
 		RandomFileList=[]
+		CmdList=[]
 		for i in range(1,RepeatNum+1):
 			if ExcludeFile:
-				cmd1="bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i -|awk -F'\t' '{print $1\"\t\"$2\"\t\"$3\"\t%s_random%s_\"NR\"\t.\t%s\"}'>%s_random%s.bed"%(BedFile,ExcludeFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
+				cmd1="bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i -|awk -F'\\t' '{print $1\"\\t\"$2\"\\t\"$3\"\\t%s_random%s_\"NR\"\\t.\\t%s\"}'>%s_random%s.bed"%(BedFile,ExcludeFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
 			else:
-				cmd1="bedtools shuffle -i %s -g %s -chrom|bedtools sort -i -|awk -F'\t' '{print $1\"\t\"$2\"\t\"$3\"\t%s_random%s_\"NR\"\t.\t%s\"}'>%s_random%s.bed"%(BedFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
+				cmd1="bedtools shuffle -i %s -g %s -chrom|bedtools sort -i -|awk -F'\\t' '{print $1\"\\t\"$2\"\\t\"$3\"\\t%s_random%s_\"NR\"\\t.\\t%s\"}'>%s_random%s.bed"%(BedFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
 			os.system(cmd1)
-			self.ShFr.write(cmd1+"\n")
+			#self.ShFr.write(cmd1+"\n")
+			CmdList.append(cmd1)
 			RandomFileList.append("%s_random%s.bed"%(MyPrefix,i))
 		cmd2="cat %s|bedtools sort -i - >%s_random_all.bed"%(" ".join(RandomFileList),MyPrefix)
 		os.system(cmd2)
-		self.ShFr.write(cmd2+"\n")
+		#self.ShFr.write(cmd2+"\n")
+		CmdList.append(cmd2)
+		return CmdList
 	def GetDeseqNormBw(self,):
 		pass
 	def AfterMath(self,):
@@ -240,6 +248,7 @@ class AnalysisPipLine(object):
 	def BwCorrelation(self,BwFileList,BinSize,IgnoreFile,Method,Type,MyPrefix="",OnlyPlot=False):  #Prefix may be need change
 		""""spearman, pearson
 		heatmap, scatterplot"""
+		self.ShFr.write("\n#BwCorrelation\n")
 		if not MyPrefix:
 			MyPrefix=self.Prefix
 		if not OnlyPlot:
@@ -251,11 +260,12 @@ class AnalysisPipLine(object):
 		os.system(cmd2)
 		self.ShFr.write(cmd2+"\n")
 	def FindMotif(self,GenomeFastaFile,BedFile,ChromSize,MyPrefix="",Strand="+",RepeatNum="10"):
+		self.ShFr.write("\n#FindMotif\n")
 		if not MyPrefix:
 			MyPrefix=self.Prefix
 		RandomFileList=[]
 		for i in range(1,RepeatNum+1):
-			cmd1="bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i -|awk -F'\t' '{print $1\"\t\"$2\"\t\"$3\"\t%s_random%s_\"NR\"\t.\t%s\"}'>%s_random%s.bed"%(BedFile,BedFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
+			cmd1="bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i -|awk -F'\\t' '{print $1\"\\t\"$2\"\\t\"$3\"\\t%s_random%s_\"NR\"\\t.\\t%s\"}'>%s_random%s.bed"%(BedFile,BedFile,ChromSize,MyPrefix,i,Strand,MyPrefix,i)
 			os.system(cmd1)
 			self.ShFr.write(cmd1+"\n")
 			#cmd2="bedtools getfasta -fi %s -bed %s_random%s.bed -s -name >%s_random%s.fasta"%(GenomeFastaFile,MyPrefix,i,MyPrefix,i)
@@ -275,16 +285,17 @@ class AnalysisPipLine(object):
 		os.system(cmd5)
 		self.ShFr.write(cmd5+"\n")
 	def PeakContentDistribution(self,PeakBed,PromoterBed,TerminaterBed,GenebodyBed): #GenebodyBed can be gene.bed,need random bed
+		self.ShFr.write("\n#PeakContentDistribution\n")
 		cmd1="wc -l %s"%PeakBed
 		TotalNum=os.popen(cmd1).readlines()[0].split()[0].rstrip()
 		self.ShFr.write(cmd1+"\n")
-		cmd2="bedtools intersect -wa -c -a %s -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed)
+		cmd2="bedtools intersect -nonamecheck -wa -c -a %s -b %s|awk -F'\\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed)
 		ProNum=os.popen(cmd2).readlines()[0].rstrip()
 		self.ShFr.write(cmd2+"\n")
-		cmd3="bedtools intersect -v -a %s -b %s|bedtools intersect -wa -c -a - -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l "%(PeakBed,PromoterBed,TerminaterBed)
+		cmd3="bedtools intersect -nonamecheck -v -a %s -b %s|bedtools intersect -nonamecheck -wa -c -a - -b %s|awk -F'\\t' '$NF!=0{print $0}'|wc -l "%(PeakBed,PromoterBed,TerminaterBed)
 		TerNum=os.popen(cmd3).readlines()[0].rstrip()
 		self.ShFr.write(cmd3+"\n")
-		cmd4="bedtools intersect -v -a %s -b %s|bedtools intersect -v -a - -b %s|bedtools intersect -wa -c -a - -b %s|awk -F'\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed,TerminaterBed,GenebodyBed)
+		cmd4="bedtools intersect -nonamecheck -v -a %s -b %s|bedtools intersect -nonamecheck -v -a - -b %s|bedtools intersect -nonamecheck -wa -c -a - -b %s|awk -F'\\t' '$NF!=0{print $0}'|wc -l"%(PeakBed,PromoterBed,TerminaterBed,GenebodyBed)
 		BodyNum=os.popen(cmd4).readlines()[0].rstrip()
 		self.ShFr.write(cmd4+"\n")
 		InterNum=int(TotalNum)-int(ProNum)-int(TerNum)-int(BodyNum)
@@ -293,6 +304,7 @@ class AnalysisPipLine(object):
 	def PeakLengthDistribution(self,PeakBed):
 		return map(lambda x:int(x[2])-int(x[1]),[x.rstrip().split("\t") for x in open(PeakBed)])
 	def SenseAntisense(self,MyPrefix,BedFile,FwdBw,RevBw,Extend): #gene sense antisense 
+		self.ShFr.write("\n#SenseAntisense\n")
 		cmd1="grep '+$' %s >%s_positive.bed"%(BedFile,MyPrefix)
 		os.system(cmd1)
 		self.ShFr.write(cmd1+"\n")
@@ -313,6 +325,7 @@ class AnalysisPipLine(object):
 		self.ShFr.write(cmd5+"\n")
 		#Calculated mean
 	def BedCorrelation(self,MyPrefix,QueryBed,TargetBed,ChromSize,BwFile="",Extend=""): #permutation test,metaplot
+		self.ShFr.write("\n#BedCorrelation\n")
 		cmd1="bedtools shuffle -i %s -excl %s -g %s -chrom -noOverlapping|bedtools sort -i - >%s_random.bed"%(QueryBed,QueryBed,ChromSize,MyPrefix)
 		os.system(cmd1)#random
 		self.ShFr.write(cmd1+"\n")
@@ -337,22 +350,26 @@ class AnalysisPipLine(object):
 			self.ShFr.write(cmd7+"\n")
 		#reldist,jaccard,fisher
 	def GetGenomeContentBedFile(self,GeneBed,Extend,ChromSize): #genebody tss, tts,intergenetic
-		cmd1="awk -F\'\t\' \'{if($6==\"+\"){print $1\"\t\"$2\"\t\"$2\"\t\"$4\"\t\"$5\"\t\"$6}else{print $1\"\t\"$3\"\t\"$3\"\t\"$4\"\t\"$5\"\t\"$6} }' %s|bedtools slop -i - -g %s -b %s >tss_%s.bed"%(GeneBed,ChromSize,Extend,Extend)
+		self.ShFr.write("\n#GetGenomeContentBedFile\n")
+		cmd1="awk -F\'\\t\' \'{if($6==\"+\"){print $1\"\\t\"$2\"\\t\"$2\"\\t\"$4\"\\t\"$5\"\\t\"$6}else{print $1\"\\t\"$3\"\\t\"$3\"\\t\"$4\"\\t\"$5\"\\t\"$6} }' %s|bedtools slop -i - -g %s -b %s >tss_%s.bed"%(GeneBed,ChromSize,Extend,Extend)
 		os.system(cmd1)
 		self.ShFr.write(cmd1+"\n")
-		cmd2="awk -F\'\t\' \'{if($6==\"+\"){print $1\"\t\"$3\"\t\"$3\"\t\"$4\"\t\"$5\"\t\"$6}else{print $1\"\t\"$2\"\t\"$2\"\t\"$4\"\t\"$5\"\t\"$6} }' %s|bedtools slop -i - -g %s -b %s >tts_%s.bed"%(GeneBed,ChromSize,Extend,Extend)
+		cmd2="awk -F\'\\t\' \'{if($6==\"+\"){print $1\"\\t\"$3\"\\t\"$3\"\\t\"$4\"\\t\"$5\"\\t\"$6}else{print $1\"\\t\"$2\"\\t\"$2\"\\t\"$4\"\\t\"$5\"\\t\"$6} }' %s|bedtools slop -i - -g %s -b %s >tts_%s.bed"%(GeneBed,ChromSize,Extend,Extend)
 		os.system(cmd2)
 		self.ShFr.write(cmd2+"\n")
-		cmd3="awk -F\'\t\' \'{Start=$2+%s;End=$3-%s;if(Start<End){print $1\"\t\"Start\"\t\"End\"\t\"$4\"\t\"$5\"\t\"$6}}' %s|bedtools sort -i - >genebody_%s.bed"%(Extend,Extend,GeneBed,Extend)
+		cmd3="awk -F\'\\t\' \'{Start=$2+%s;End=$3-%s;if(Start<End){print $1\"\\t\"Start\"\\t\"End\"\\t\"$4\"\\t\"$5\"\\t\"$6}}' %s|bedtools sort -i - >genebody_%s.bed"%(Extend,Extend,GeneBed,Extend)
 		os.system(cmd3)
 		self.ShFr.write(cmd3+"\n")
 		cmd4="cat tss_%s.bed tts_%s.bed genebody_%s.bed|bedtools sort -i -|bedtools merge -i -|bedtools complement -i - -g %s >intergenetic.bed"%(Extend,Extend,Extend,ChromSize)
 		self.ShFr.write(cmd4+"\n")
-		os.system(cmd4)
+		#os.system(cmd4)
+		E=subprocess.Popen(cmd4,shell=True,stderr=subprocess.PIPE).stderr.readlines()
+		return E
 	def GetMergePeakCountMatrix(self,PeakDic,BamDic,MyPrefix=""):#PeakDic={"sample":"peaks.bed"},BamDic={"sample":"sample.bam"}
+		self.ShFr.write("\n#GetMergePeakCountMatrix\n")
 		if not MyPrefix:
 			MyPrefix=self.Prefix
-		cmd1="cat %s|bedtools sort -i -|bedtools merge -i - |awk -F'\t' '{print $0\"\tmerge_%s_\"NR\"\t.\t.\"}' >merge_%s.bed"%(" ".join(PeakDic.values()),MyPrefix,MyPrefix)
+		cmd1="cat %s|bedtools sort -i -|bedtools merge -i - |awk -F'\\t' '{print $0\"\\tmerge_%s_\"NR\"\\t.\\t.\"}' >merge_%s.bed"%(" ".join(PeakDic.values()),MyPrefix,MyPrefix)
 		os.system(cmd1)
 		self.ShFr.write(cmd1+"\n")
 		BamList=[]
@@ -484,6 +501,7 @@ class AnalysisPipLine(object):
 				break
 		return SkewList
 	def GetATGCSkewBw(self,GenomeFastaFile,ChromSize,Win,Step,MyPrefix=""):#win=100,step=50
+		self.ShFr.write("\n#GetATGCSkewBw\n")
 		if not MyPrefix:
 			MyPrefix=self.Prefix
 		FrGC=open(MyPrefix+"_GCSkew.bdg","w")
@@ -522,10 +540,12 @@ class AnalysisPipLine(object):
 		os.system(cmd2)
 		self.ShFr.write(cmd2+"\n")
 	def GetSkewGz(self,GCSkewBw,ATSkewBw,BedFile,Extend,MyPrefix):
+		self.ShFr.write("\n#GetSkewGz\n")
 		cmd="computeMatrix scale-regions -p %s -S %s %s -R %s -bs 5 -b %s -a %s -m %s --skipZeros --samplesLabel GCSkew ATSkew --outFileName %s_GCATSkew.gz"%(self.Thread,GCSkewBw,ATSkewBw,BedFile,Extend,Extend,Extend,MyPrefix)
 		os.system(cmd)
 		self.ShFr.write(cmd+"\n")
 	def GetAnnoPeak(self,PeakBedFile,GeneBedFile,AnnoFileList):
+		self.ShFr.write("\n#GetAnnoPeak\n")
 		cmd="bedtools closest -nonamecheck -a %s -b %s -D ref"%(PeakBedFile,GeneBedFile)
 		self.ShFr.write(cmd+"\n")
 		Annod=collections.defaultdict(list)
@@ -594,5 +614,7 @@ class AnalysisPipLine(object):
 		Fr.close()
 		os.system("chmod 755 %s_cluster.r"%MyPrefix)
 		os.system("./%s_cluster.r"%MyPrefix)
+	def CmdWrite(self,Cmd):
+		self.ShFr.write(Cmd)
 	def AfterMath(self,):
 		self.ShFr.close()

@@ -272,6 +272,9 @@ def DownstreamAnalysis(ConfigDic):
 	p=AnalysisPipLine(ConfigDic["ProjectName"],ConfigDic["Thread"])
 	if ExistsDic["DownstreamAnalysis"]==[]:
 		os.mkdir("%s_analysis"%ConfigDic["ProjectName"])
+
+	#correlation
+	logging.info("start correlation")
 	if not "correlation" in ExistsDic["DownstreamAnalysis"]:
 		os.mkdir("%s_analysis/correlation"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/correlation/"%ConfigDic["ProjectName"])
@@ -285,15 +288,85 @@ def DownstreamAnalysis(ConfigDic):
 		os.chdir(Path)
 	else:
 		logging.info("correlation folder already exists. Correlation analysis will not be done. If you want to do this analysis, please delete this folder.")
-	if not "motif" in ExistsDic["DownstreamAnalysis"]:
-		os.mkdir("%s_analysis/motif"%ConfigDic["ProjectName"])
+	logging.info("complete correlation")
+
+	#peaks_content_distribution
+	logging.info("start peaks_content_distribution")
+	if not "peaks_content_distribution" in ExistsDic["DownstreamAnalysis"]:
+		PeakContentDic={}
+		os.mkdir("%s_analysis/peaks_content_distribution"%ConfigDic["ProjectName"])
+		os.chdir(Path+"/%s_analysis/peaks_content_distribution/"%ConfigDic["ProjectName"])
+		El=p.GetGenomeContentBedFile(ConfigDic["GeneBed"],ConfigDic["ContentExtend"],ConfigDic["ChromSize"])
+		if El!=[]:
+			for ei in El:
+				ei=ei.decode("utf-8")
+				logging.error(ei)
+				m=re.search("different sort order than the genomeFile",ei)
+				if m:
+					logging.error("please sort %s"%ConfigDic["ChromSize"])
+					print("please sort %s"%ConfigDic["ChromSize"])
+			sys.exit()
+		for s in SampleList:
+			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s/%s/%s_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s]=[ProNum,TerNum,BodyNum,InterNum]
+			CmdList=BasePipLine.GetRandomBed("%s/%s/%s_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s)
+			for c in CmdList:
+				p.CmdWrite(c+"\n")
+			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s+"_random"]=[ProNum,TerNum,BodyNum,InterNum]
+			p.PeakContentDistribution("%s/%s/%s_fwd_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s+"_fwd"]=[ProNum,TerNum,BodyNum,InterNum]
+			CmdList=BasePipLine.GetRandomBed("%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s+"_fwd")
+			for c in CmdList:
+				p.CmdWrite(c+"\n")
+			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_fwd_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s+"_fwd_random"]=[ProNum,TerNum,BodyNum,InterNum]
+			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s/%s/%s_rev_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s+"_rev"]=[ProNum,TerNum,BodyNum,InterNum]
+			CmdList=BasePipLine.GetRandomBed("%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],Strand="-",MyPrefix=s+"_rev")
+			for c in CmdList:
+				p.CmdWrite(c+"\n")
+			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_rev_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
+			PeakContentDic[s+"_rev_random"]=[ProNum,TerNum,BodyNum,InterNum]
+		df=pandas.DataFrame.from_dict(data=PeakContentDic,orient='index')
+		df.to_csv("%s_peaks_content_distribution.xls"%ConfigDic["ProjectName"],sep="\t",header=["ProNum","TerNum","BodyNum","InterNum"],index_label="Sample")
+		os.chdir(Path)
 	else:
-		logging.info("motif folder already exists. Motif analysis will not be done. If you want to do this analysis, please delete this folder.")
+		logging.info("peaks_content_distribution folder already exists. peaks_content_distribution analysis will not be done. If you want to do this analysis, please delete this folder.")
+	logging.info("complete peaks_content_distribution")
+
+	#peaks_length_distribution
+	logging.info("start peaks_length_distribution")
+	if not "peaks_length_distribution" in ExistsDic["DownstreamAnalysis"]:
+		PeakLengthDic={}
+		os.mkdir("%s_analysis/peaks_length_distribution"%ConfigDic["ProjectName"])
+		os.chdir(Path+"/%s_analysis/peaks_length_distribution/"%ConfigDic["ProjectName"])
+		for s in SampleList:
+			PeakLengthDic[s]=list(p.PeakLengthDistribution("%s/%s/%s_peaks.bed"%(Path,s,s)))
+			PeakLengthDic[s+"_fwd"]=list(p.PeakLengthDistribution("%s/%s/%s_fwd_peaks.bed"%(Path,s,s)))
+			PeakLengthDic[s+"_rev"]=list(p.PeakLengthDistribution("%s/%s/%s_rev_peaks.bed"%(Path,s,s)))
+		np.save('%s_peaks_length_distribution.npy'%ConfigDic['ProjectName'],PeakLengthDic)
+		os.chdir(Path)
+	else:
+		logging.info("peaks_length_distribution folder already exists. peaks_length_distribution analysis will not be done. If you want to do this analysis, please delete this folder.")
+	logging.info("complete peaks_length_distribution")
+
+	#sense_antisense
+	logging.info("start sense_antisense")
 	if not "sense_antisense" in ExistsDic["DownstreamAnalysis"]:
 		os.mkdir("%s_analysis/sense_antisense"%ConfigDic["ProjectName"])
+		os.chdir(Path+"/%s_analysis/sense_antisense/"%ConfigDic["ProjectName"])
+		for s in SampleList:
+			FwdBw="%s/%s/%s_fwd_nucleus_norm.bw"%(Path,s,s)
+			RevBw="%s/%s/%s_rev_nucleus_norm.bw"%(Path,s,s)
+			p.SenseAntisense(s,ConfigDic["GeneBed"],FwdBw,RevBw,ConfigDic["MetaplotExtend"])
+		os.chdir(Path)
 	else:
 		logging.info("sense_antisense folder already exists. sense_antisense analysis will not be done. If you want to do this analysis, please delete this folder.")
-	p.GetGenomeContentBedFile(ConfigDic["GeneBed"],ConfigDic["ContentExtend"],ConfigDic["ChromSize"])
+	logging.info("complete sense_antisense")
+
+	#skew
+	logging.info("start skew")
 	if not "skew" in ExistsDic["DownstreamAnalysis"]:
 		os.mkdir("%s_analysis/skew"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/skew/"%ConfigDic["ProjectName"])
@@ -301,63 +374,30 @@ def DownstreamAnalysis(ConfigDic):
 		GCSkewBw="%s_GCSkew.bw"%ConfigDic["ProjectName"]
 		ATSkewBw="%s_ATSkew.bw"%ConfigDic["ProjectName"]
 		p.GetSkewGz(GCSkewBw,ATSkewBw,ConfigDic["GeneBed"],ConfigDic["MetaplotExtend"],"gene")
-		os.chdir(Path)
-	else:
-		logging.info("skew folder already exists. Skew analysis will not be done. If you want to do this analysis, please delete this folder.")
-	PeakContentDic={}
-	PeakLengthDic={}
-	for s in SampleList:
-		if not "peaks_content_distribution" in ExistsDic["DownstreamAnalysis"]:
-			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s/%s/%s_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s]=[ProNum,TerNum,BodyNum,InterNum]
-			p.GetRandomBed("%s/%s/%s_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s)
-			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s+"_random"]=[ProNum,TerNum,BodyNum,InterNum]
-			p.PeakContentDistribution("%s/%s/%s_fwd_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s+"_fwd"]=[ProNum,TerNum,BodyNum,InterNum]
-			p.GetRandomBed("%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s+"_fwd")
-			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_fwd_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s+"_fwd_random"]=[ProNum,TerNum,BodyNum,InterNum]
-			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s/%s/%s_rev_peaks.bed"%(Path,s,s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s+"_rev"]=[ProNum,TerNum,BodyNum,InterNum]
-			p.GetRandomBed("%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],Strand="-",MyPrefix=s+"_rev")
-			ProNum,TerNum,BodyNum,InterNum=p.PeakContentDistribution("%s_rev_random_all.bed"%(s),"tss_%s.bed"%ConfigDic["ContentExtend"],"tts_%s.bed"%ConfigDic["ContentExtend"],"genebody_%s.bed"%ConfigDic["ContentExtend"])
-			PeakContentDic[s+"_rev_random"]=[ProNum,TerNum,BodyNum,InterNum]
-		if not "peaks_length_distribution" in ExistsDic["DownstreamAnalysis"]:
-			PeakLengthDic[s]=p.PeakLengthDistribution("%s/%s/%s_peaks.bed"%(Path,s,s))
-			PeakLengthDic[s+"_fwd"]=p.PeakLengthDistribution("%s/%s/%s_fwd_peaks.bed"%(Path,s,s))
-			PeakLengthDic[s+"_rev"]=p.PeakLengthDistribution("%s/%s/%s_rev_peaks.bed"%(Path,s,s))
-		if not "sense_antisense" in ExistsDic["DownstreamAnalysis"]:
-			FwdBw="%s/%s/%s_fwd_nucleus_norm.bw"%(Path,s,s)
-			RevBw="%s/%s/%s_rev_nucleus_norm.bw"%(Path,s,s)
-			os.chdir(Path+"/%s_analysis/sense_antisense/"%ConfigDic["ProjectName"])
-			p.SenseAntisense(s,ConfigDic["GeneBed"],FwdBw,RevBw,ConfigDic["MetaplotExtend"])
-		if not "skew" in ExistsDic["DownstreamAnalysis"]:
-			os.chdir(Path+"/%s_analysis/skew/"%ConfigDic["ProjectName"])
+		for s in SampleList:
 			p.GetSkewGz(GCSkewBw,ATSkewBw,"%s/%s/%s_peaks.bed"%(Path,s,s),ConfigDic["MetaplotExtend"],s)
 			p.GetSkewGz(GCSkewBw,ATSkewBw,"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["MetaplotExtend"],s+"_fwd")
 			p.GetSkewGz(GCSkewBw,ATSkewBw,"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["MetaplotExtend"],s+"_rev")
-		if not "motif" in ExistsDic["DownstreamAnalysis"]:
-			os.chdir(Path+"/%s_analysis/motif/"%ConfigDic["ProjectName"])
+		os.chdir(Path)
+	else:
+		logging.info("skew folder already exists. Skew analysis will not be done. If you want to do this analysis, please delete this folder.")
+	logging.info("complete skew")
+
+	#motif
+	logging.info("start motif")
+	if not "motif" in ExistsDic["DownstreamAnalysis"]:
+		os.mkdir("%s_analysis/motif"%ConfigDic["ProjectName"])
+		os.chdir(Path+"/%s_analysis/motif/"%ConfigDic["ProjectName"])
+		for s in SampleList:
 			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_fwd",Strand="+",RepeatNum=int(ConfigDic["RepeatNum"]))
 			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_rev",Strand="-",RepeatNum=int(ConfigDic["RepeatNum"]))
 		os.chdir(Path)
-	if not "peaks_content_distribution" in ExistsDic["DownstreamAnalysis"]:
-		df=pandas.DataFrame.from_dict(data=PeakContentDic,orient='index')
-		os.mkdir("%s_analysis/peaks_content_distribution"%ConfigDic["ProjectName"])
-		os.chdir(Path+"/%s_analysis/peaks_content_distribution/"%ConfigDic["ProjectName"])
-		df.to_csv("%s_peaks_content_distribution.xls"%ConfigDic["ProjectName"],sep="\t",header=["ProNum","TerNum","BodyNum","InterNum"],index_label="Sample")
-		os.system("mv %s/tss_%s.bed %s/tts_%s.bed %s/genebody_%s.bed ."%(Path,ConfigDic["ContentExtend"],Path,ConfigDic["ContentExtend"],Path,ConfigDic["ContentExtend"]))
-		os.chdir(Path)
 	else:
-		logging.info("peaks_content_distribution folder already exists. peaks_content_distribution analysis will not be done. If you want to do this analysis, please delete this folder.")
-	if not "peaks_length_distribution" in ExistsDic["DownstreamAnalysis"]:
-		os.mkdir("%s_analysis/peaks_length_distribution"%ConfigDic["ProjectName"])
-		os.chdir(Path+"/%s_analysis/peaks_length_distribution/"%ConfigDic["ProjectName"])
-		np.save('%s_peaks_length_distribution.npy'%ConfigDic['ProjectName'],PeakLengthDic)
-		os.chdir(Path)
-	else:
-		logging.info("peaks_length_distribution folder already exists. peaks_length_distribution analysis will not be done. If you want to do this analysis, please delete this folder.")
+		logging.info("motif folder already exists. Motif analysis will not be done. If you want to do this analysis, please delete this folder.")
+	logging.info("complete motif")
+
+	#cluster
+	logging.info("start cluster")
 	if not "cluster" in ExistsDic["DownstreamAnalysis"]:
 		os.mkdir("%s_analysis/cluster"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/cluster/"%ConfigDic["ProjectName"])
@@ -371,6 +411,7 @@ def DownstreamAnalysis(ConfigDic):
 		os.chdir(Path)
 	else:
 		logging.info("cluster folder already exists. cluster analysis will not be done. If you want to do this analysis, please delete this folder.")
+	logging.info("complete cluster")
 	#p.BedCorrelation()
 	p.AfterMath()
 def Main(ConfigFile,SubCommand):
