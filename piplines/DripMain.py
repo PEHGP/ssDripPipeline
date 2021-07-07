@@ -297,7 +297,7 @@ def DownstreamAnalysis(ConfigDic):
 	if not "skew" in ExistsDic["DownstreamAnalysis"]:
 		os.mkdir("%s_analysis/skew"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/skew/"%ConfigDic["ProjectName"])
-		p.GetATGCSkewBw(ConfigDic["GenomeFastaFile"],ConfigDic["ChromSize"],ConfigDic["Win"],ConfigDic["Step"])
+		p.GetATGCSkewBw(ConfigDic["GenomeFastaFile"],ConfigDic["ChromSize"],int(ConfigDic["Win"]),int(ConfigDic["Step"]))
 		GCSkewBw="%s_GCSkew.bw"%ConfigDic["ProjectName"]
 		ATSkewBw="%s_ATSkew.bw"%ConfigDic["ProjectName"]
 		p.GetSkewGz(GCSkewBw,ATSkewBw,ConfigDic["GeneBed"],ConfigDic["MetaplotExtend"],"gene")
@@ -347,6 +347,7 @@ def DownstreamAnalysis(ConfigDic):
 		os.mkdir("%s_analysis/peaks_content_distribution"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/peaks_content_distribution/"%ConfigDic["ProjectName"])
 		df.to_csv("%s_peaks_content_distribution.xls"%ConfigDic["ProjectName"],sep="\t",header=["ProNum","TerNum","BodyNum","InterNum"],index_label="Sample")
+		os.system("mv %s/tss_%s.bed %s/tts_%s.bed %s/genebody_%s.bed ."%(Path,ConfigDic["ContentExtend"],Path,ConfigDic["ContentExtend"],Path,ConfigDic["ContentExtend"]))
 		os.chdir(Path)
 	else:
 		logging.info("peaks_content_distribution folder already exists. peaks_content_distribution analysis will not be done. If you want to do this analysis, please delete this folder.")

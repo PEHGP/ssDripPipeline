@@ -346,7 +346,7 @@ class AnalysisPipLine(object):
 		cmd3="awk -F\'\t\' \'{Start=$2+%s;End=$3-%s;if(Start<End){print $1\"\t\"Start\"\t\"End\"\t\"$4\"\t\"$5\"\t\"$6}}' %s|bedtools sort -i - >genebody_%s.bed"%(Extend,Extend,GeneBed,Extend)
 		os.system(cmd3)
 		self.ShFr.write(cmd3+"\n")
-		cmd4="cat tss_%s.bed tts_%s.bed genebody_%s.bed|bedtools merge -i -|bedtools sort -i -|bedtools complement -i - -g %s >intergenetic.bed"%(Extend,Extend,Extend,ChromSize)
+		cmd4="cat tss_%s.bed tts_%s.bed genebody_%s.bed|bedtools sort -i -|bedtools merge -i -|bedtools complement -i - -g %s >intergenetic.bed"%(Extend,Extend,Extend,ChromSize)
 		self.ShFr.write(cmd4+"\n")
 		os.system(cmd4)
 	def GetMergePeakCountMatrix(self,PeakDic,BamDic,MyPrefix=""):#PeakDic={"sample":"peaks.bed"},BamDic={"sample":"sample.bam"}
@@ -526,7 +526,7 @@ class AnalysisPipLine(object):
 		os.system(cmd)
 		self.ShFr.write(cmd+"\n")
 	def GetAnnoPeak(self,PeakBedFile,GeneBedFile,AnnoFileList):
-		cmd="bedtools closest -a %s -b %s -D ref"%(PeakBedFile,GeneBedFile)
+		cmd="bedtools closest -nonamecheck -a %s -b %s -D ref"%(PeakBedFile,GeneBedFile)
 		self.ShFr.write(cmd+"\n")
 		Annod=collections.defaultdict(list)
 		for x in os.popen(cmd).readlines():
@@ -535,13 +535,13 @@ class AnalysisPipLine(object):
 			Annod[l[3]].append(l[-4]+","+l[-2]+","+l[-1])
 		for f in AnnoFileList:
 			Name=f.split(".")[0]
-			Fr=open(name+"_anno.xls","w")
+			Fr=open(Name+"_anno.xls","w")
 			lines=open(f).readlines()
 			Fr.write(lines[0].rstrip()+"\tanno\n")
 			for x in lines[1:]:
 				x=x.rstrip()
 				l=x.split("\t")
-				Fr.write(x+"\t"+";".join(d[l[0]])+"\n")
+				Fr.write(x+"\t"+";".join(Annod[l[0]])+"\n")
 			Fr.close()
 	def GetNoiseqFile(self,):
 		pass
