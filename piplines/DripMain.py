@@ -389,8 +389,8 @@ def DownstreamAnalysis(ConfigDic):
 		os.mkdir("%s_analysis/motif"%ConfigDic["ProjectName"])
 		os.chdir(Path+"/%s_analysis/motif/"%ConfigDic["ProjectName"])
 		for s in SampleList:
-			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_fwd",Strand="+",RepeatNum=int(ConfigDic["RepeatNum"]))
-			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=ConfigDic["ProjectName"]+"_rev",Strand="-",RepeatNum=int(ConfigDic["RepeatNum"]))
+			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_fwd_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s+"_fwd",Strand="+",RepeatNum=int(ConfigDic["RepeatNum"]))
+			p.FindMotif(ConfigDic["GenomeFastaFile"],"%s/%s/%s_rev_peaks.bed"%(Path,s,s),ConfigDic["ChromSize"],MyPrefix=s+"_rev",Strand="-",RepeatNum=int(ConfigDic["RepeatNum"]))
 		os.chdir(Path)
 	else:
 		logging.info("motif folder already exists. Motif analysis will not be done. If you want to do this analysis, please delete this folder.")
@@ -403,9 +403,9 @@ def DownstreamAnalysis(ConfigDic):
 		os.chdir(Path+"/%s_analysis/cluster/"%ConfigDic["ProjectName"])
 		for st in ["fwd","rev","all"]:
 			if st=="all":
-				LevelFile=Path+"/%s_deseq/%s/%s_counts_final.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"])
+				LevelFile=Path+"/%s_deseq/%s/%s_norm.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"])
 			else:
-				LevelFile=Path+"/%s_deseq/%s/%s_%s_counts_final.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"],st)
+				LevelFile=Path+"/%s_deseq/%s/%s_%s_norm.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"],st)
 			p.GetDiffRloopLevelFile(glob.glob(Path+"/%s_deseq/%s/*_diffexpr_results.xls"%(ConfigDic["ProjectName"],st)),Path+"/"+ConfigDic["Target"],LevelFile,MyPrefix=ConfigDic["ProjectName"]+"_"+st)
 			p.GetCluster("%s_%s_diff_union.xls"%(ConfigDic["ProjectName"],st),MyPrefix=ConfigDic["ProjectName"]+"_"+st)
 		os.chdir(Path)

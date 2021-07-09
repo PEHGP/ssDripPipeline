@@ -566,6 +566,8 @@ class AnalysisPipLine(object):
 			l=x.split("\t")
 			Annod[l[3]].append(l[-4]+","+l[-2]+","+l[-1])
 		for f in AnnoFileList:
+			if f.endswith("_counts.xls"):
+				continue
 			Name=f.split(".")[0]
 			Fr=open(Name+"_anno.xls","w")
 			lines=open(f).readlines()
@@ -596,9 +598,15 @@ class AnalysisPipLine(object):
 			df_r[g]=df2.loc[:,Gd[g]].mean(axis=1)
 		df_r.to_csv(MyPrefix+"_diff_union.xls",sep="\t")
 	def GetCluster(self,DiffRloopLevelFile,MyPrefix=""): #mfuzz,DiffRloopLevelFile:Differential gene Union,There can be no duplicate samples,header=peak\tsample1\tsample2...\tsamplen
-		SampleList=open(RloopLevelFile).readlines()[0].split("\t")[1:]
+		SampleList=open(DiffRloopLevelFile).readlines()[0].split("\t")[1:]
 		SampleNum=len(SampleList)
-		ClusterNumber=3**SampleNum
+		if SampleNum<=4:
+			ClusterNumber=4
+		elif SampleNum<=8:
+			ClusterNumber=6
+		else:
+			ClusterNumber=8
+		#ClusterNumber=3**SampleNum
 		si=SampleNum**0.5
 		if SampleNum%si==0:
 			r=c=int(si)
