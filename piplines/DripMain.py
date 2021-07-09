@@ -403,10 +403,10 @@ def DownstreamAnalysis(ConfigDic):
 		os.chdir(Path+"/%s_analysis/cluster/"%ConfigDic["ProjectName"])
 		for st in ["fwd","rev","all"]:
 			if st=="all":
-				LevelFile=Path+"/deseq/%s/%s_counts_final.xls"%(st,ConfigDic["ProjectName"])
+				LevelFile=Path+"/%s_deseq/%s/%s_counts_final.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"])
 			else:
-				LevelFile=Path+"/deseq/%s/%s_%s_counts_final.xls"%(st,ConfigDic["ProjectName"],st)
-			p.GetDiffRloopLevelFile(glob.glob(Path+"/deseq/%s/*_diffexpr_results.xls"%st),ConfigDic["Target"],LevelFile,MyPrefix=ConfigDic["ProjectName"]+"_"+st)
+				LevelFile=Path+"/%s_deseq/%s/%s_%s_counts_final.xls"%(ConfigDic["ProjectName"],st,ConfigDic["ProjectName"],st)
+			p.GetDiffRloopLevelFile(glob.glob(Path+"/%s_deseq/%s/*_diffexpr_results.xls"%(ConfigDic["ProjectName"],st)),Path+"/"+ConfigDic["Target"],LevelFile,MyPrefix=ConfigDic["ProjectName"]+"_"+st)
 			p.GetCluster("%s_%s_diff_union.xls"%(ConfigDic["ProjectName"],st),MyPrefix=ConfigDic["ProjectName"]+"_"+st)
 		os.chdir(Path)
 	else:

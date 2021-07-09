@@ -282,8 +282,8 @@ class AnalysisPipLine(object):
 		os.system(cmd5)
 		self.ShFr.write(cmd5+"\n")
 		cmd6="findMotifs.pl %s.fasta fasta %s_motif -fasta %s_random_all.fasta -len 8,10,12 -p %s -cache 50000"%(MyPrefix,MyPrefix,MyPrefix,self.Thread)
-		os.system(cmd5)
-		self.ShFr.write(cmd5+"\n")
+		os.system(cmd6)
+		self.ShFr.write(cmd6+"\n")
 	def PeakContentDistribution(self,PeakBed,PromoterBed,TerminaterBed,GenebodyBed): #GenebodyBed can be gene.bed,need random bed
 		self.ShFr.write("\n#PeakContentDistribution\n")
 		cmd1="wc -l %s"%PeakBed
@@ -530,15 +530,27 @@ class AnalysisPipLine(object):
 				for l in ATSkewList:
 					Start=l[1]+ShrinkLeft
 					End=l[2]-ShrinkRight
-					FrGC.write(l[0]+"\t"+str(Start)+"\t"+str(End)+"\t"+str(l[3])+"\n")
+					FrAT.write(l[0]+"\t"+str(Start)+"\t"+str(End)+"\t"+str(l[3])+"\n")
 		FrGC.close()
 		FrAT.close()
-		cmd1="bedGraphToBigWig %s_GCSkew.bdg %s %s_GCSkew.bw"%(MyPrefix,ChromSize,MyPrefix)
+		cmd1="bedtools sort -i %s_GCSkew.bdg >%s_GCSkew.sort.bdg"%(MyPrefix,MyPrefix)
 		os.system(cmd1)
 		self.ShFr.write(cmd1+"\n")
-		cmd2="bedGraphToBigWig %s_ATSkew.bdg %s %s_ATSkew.bw"%(MyPrefix,ChromSize,MyPrefix)
+		cmd2="rm -rf %s_GCSkew.bdg"%MyPrefix
 		os.system(cmd2)
 		self.ShFr.write(cmd2+"\n")
+		cmd3="bedGraphToBigWig %s_GCSkew.sort.bdg %s %s_GCSkew.bw"%(MyPrefix,ChromSize,MyPrefix)
+		os.system(cmd3)
+		self.ShFr.write(cmd3+"\n")
+		cmd4="bedtools sort -i %s_ATSkew.bdg >%s_ATSkew.sort.bdg"%(MyPrefix,MyPrefix)
+		os.system(cmd4)
+		self.ShFr.write(cmd4+"\n")
+		cmd5="rm -rf %s_ATSkew.bdg"%MyPrefix
+		os.system(cmd5)
+		self.ShFr.write(cmd5+"\n")
+		cmd6="bedGraphToBigWig %s_ATSkew.sort.bdg %s %s_ATSkew.bw"%(MyPrefix,ChromSize,MyPrefix)
+		os.system(cmd6)
+		self.ShFr.write(cmd6+"\n")
 	def GetSkewGz(self,GCSkewBw,ATSkewBw,BedFile,Extend,MyPrefix):
 		self.ShFr.write("\n#GetSkewGz\n")
 		cmd="computeMatrix scale-regions -p %s -S %s %s -R %s -bs 5 -b %s -a %s -m %s --skipZeros --samplesLabel GCSkew ATSkew --outFileName %s_GCATSkew.gz"%(self.Thread,GCSkewBw,ATSkewBw,BedFile,Extend,Extend,Extend,MyPrefix)
