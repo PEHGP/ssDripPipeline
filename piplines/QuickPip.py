@@ -463,7 +463,8 @@ class AnalysisPipLine(object):
 				x,y=y,x
 			co=",".join(["\""+i+"\"" for i in Group[x]])+","
 			co+=",".join(["\""+i+"\"" for i in Group[y]])
-			Fr.write("res <- results(dds,contrast=c(\'condition\',\'%s\',\'%s\'),addMLE=TRUE)\n"%(x,y))
+			Fr.write("res <- results(dds,contrast=c(\'condition\',\'%s\',\'%s\'))\n"%(x,y))
+			#Fr.write("res <- lfcShrink(dds,contrast=c(\'condition\',\'%s\',\'%s\'))\n"%(x,y))
 			Fr.write("resdata <- merge(exp[,c(%s)],as.data.frame(res), by=\"row.names\", sort=FALSE)\n"%co)
 			Fr.write("names(resdata)[1] <- \"Gene\"\n")
 			Fr.write("write.table(resdata, file=\"%s_%s_%s_diffexpr_results.xls\",sep=\"\\t\",quote=F,row.names=F)\n"%(MyPrefix,x,y))
