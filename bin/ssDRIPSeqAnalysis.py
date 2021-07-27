@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from piplines import DripMain
+from ssDripPiplines import DripMain
 import sys
 if __name__ == "__main__":
 	if len(sys.argv) == 1:

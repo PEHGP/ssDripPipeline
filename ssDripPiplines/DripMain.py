@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import json,sys,os
-from QuickPip import *
+from ssDripPiplines.QuickPip import *
 import logging,datetime,glob
 logging.basicConfig(level=logging.INFO,format = '%(asctime)s - %(pathname)s - %(filename)s - %(funcName)s - %(levelname)s - %(message)s',filemode="w",filename="log_%s.txt"%datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 def CheckJson(ConfigDic):

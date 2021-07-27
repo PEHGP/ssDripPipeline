@@ -28,7 +28,6 @@ setup(
 		'Intended Audience :: Science/Research',
 		'Topic :: Scientific/Engineering :: Bio-Informatics'],
 	install_requires=[
-		"deepTools >= 3.5.0",
 		"pandas >= 1.0.1",
 		"biopython >=1.78",
 	],
