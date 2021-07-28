@@ -1,10 +1,16 @@
 #!/usr/bin/env python
-from ssDripPiplines import DripMain
+from ssDripPiplines import DripMain,_version
 import sys
 if __name__ == "__main__":
-	if len(sys.argv) == 1:
-		print("ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAnalysis|AllPip>")
+	SubCommandList=["BaseAnalysis","DeseqAnalysis","DownstreamAnalysis","AllPip"]
+	if len(sys.argv) != 3:
+		print("\nssDRIPSeqAnalysis.py <DripConfig.json> <%s>\n"%("|".join(SubCommandList)))
+		print("version:%s\n"%_version.__version__)
 		sys.exit()
 	ConfigFile=sys.argv[1]
 	SubCommand=sys.argv[2]
-	DripMain.Main(ConfigFile,SubCommand)
+	if not SubCommand in SubCommandList:
+		print("\n%s is not a right method."%SubCommand)
+		print("only %s can be selected.\n"%",".join(SubCommandList))
+	else:
+		DripMain.Main(ConfigFile,SubCommand)
