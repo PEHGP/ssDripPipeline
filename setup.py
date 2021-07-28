@@ -12,6 +12,7 @@ def get_version():
 			ver = m.group(1)
 			return ver
 	return None
+
 setup(
 	name='DripPipLine',
 	version=get_version(),
