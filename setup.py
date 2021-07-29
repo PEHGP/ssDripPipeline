@@ -2,7 +2,7 @@ import re
 from setuptools import setup, find_packages
 def get_version():
 	try:
-		f = open("piplines/_version.py")
+		f = open("ssDripPipelines/_version.py")
 	except EnvironmentError:
 		return None
 	for line in f:
@@ -14,14 +14,14 @@ def get_version():
 	return None
 
 setup(
-	name='DripPipLine',
+	name='ssDripPipeline',
 	version=get_version(),
 	author='LiKuan',
 	author_email="396777306@qq.com",
 	packages=find_packages(),
 	scripts=['bin/ssDRIPSeqAnalysis.py',],
 	#include_package_data=True,
-	url='https://github.com/PEHGP/drippipline',
+	url='https://github.com/PEHGP/ssDripPipeline',
 	license='GPL-3.0',
 	description='Useful tools for the analysis of ssDRIP-seq data ',
 	long_description='',
