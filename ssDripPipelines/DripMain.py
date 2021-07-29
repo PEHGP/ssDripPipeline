@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import json,sys,os
-from ssDripPiplines.QuickPip import *
+from ssDripPipelines.QuickPip import *
 import logging,datetime,glob
 def CheckJson(ConfigDic):
 	Cl2=["SeqDataPath","FilterChromFile","ChromSize","GenomeFastaFile","GeneBed"]

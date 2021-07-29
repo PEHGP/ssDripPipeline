@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from ssDripPiplines import DripMain,_version
+from ssDripPipelines import DripMain,_version
 import sys
 if __name__ == "__main__":
 	SubCommandList=["BaseAnalysis","DeseqAnalysis","DownstreamAnalysis","AllPip"]
