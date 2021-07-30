@@ -72,6 +72,8 @@ ssDRIPSeqAnalysis.py DripConfig.json AllPip
 ssDRIPSeqAnalysis.py requires a configuration file in json format as input.
 
 If you copy the following json configuration file, please delete the comments, because json does not support comments.
+
+**DripConfig.json**
 ```
 {
         //The name of your project.
@@ -114,7 +116,7 @@ If you copy the following json configuration file, please delete the comments, b
         "Step":"50"
 }
 ```
-The target file format is as follows:
+**The target file format is as follows:**
 
 If you don’t use spike-in, the target file will contain four columns. Each column is separated by Tab. The first column is the group name. The second column is the sample name. Repeat samples have the same group name. The third and fourth columns are paired-end sequencing data in fastq format.
 ```
@@ -131,6 +133,7 @@ SampleB	SampleB_rep1	SampleB_rep1_R1.fastq.gz	SampleB_rep1_R2.fastq.gz	SampleB_r
 SampleB	SampleB_rep2	SampleB_rep2_R1.fastq.gz	SampleB_rep2_R2.fastq.gz	SampleB_rep2_input	SampleB_rep2_input_R1.fastq.gz	SampleB_rep2_input_R2.fastq.gz
 ```
 ## Outputs
+The following is the directory structure of the output results.
 ```
 ├── SampleA_rep1
 │   ├── SampleA_rep1_fwd_nucleus_norm.bw
