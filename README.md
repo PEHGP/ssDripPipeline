@@ -1,13 +1,16 @@
 # ssDripPipeline
-This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:\
+This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:
+
 **BaseAnalysis**
 - Alignment of reads to reference sequences
 - Duplicates removing
 - Strand splitting
 - Peak calling
-- Normalized bam to bigwig file\
+- Normalized bam to bigwig file
+
 **DeseqAnalysis**
-- DESeq2 for peaks(merge the peaks of all samples)\
+- DESeq2 for peaks(merge the peaks of all samples)
+
 **DownstreamAnalysis**
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
@@ -39,20 +42,23 @@ Usage:
 ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAnalysis|AllPip>
 ```
 ## Commands
-**ssDRIPSeqAnalysis.py** contains four subcommands\\
+**ssDRIPSeqAnalysis.py** contains four subcommands\
+\
 **BaseAnalysis**
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
-**DeseqAnalysis**(The results of **BaseAnalysis** is required)
+**DeseqAnalysis**\
+The results of **BaseAnalysis** is required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
 ```
-**DownstreamAnalysis**(The results of **DeseqAnalysis** and **BaseAnalysis** are required)
+**DownstreamAnalysis**\
+The results of **DeseqAnalysis** and **BaseAnalysis** are required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
 ```
-**AllPip**
+**AllPip**\
 Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json AllPip
@@ -134,5 +140,5 @@ The following software is used by this pipeline. When installing ssDripPipeline,
 6. [Bigwig format](https://genomebrowser.wustl.edu/goldenPath/help/bigWig.html)
 7. [Bed format](https://genome-asia.ucsc.edu/FAQ/FAQformat.html#format1)
 8. [Metaplot](https://deeptools.readthedocs.io/en/latest/content/tools/plotProfile.html)
-9. A detailed explanation of the ssDripPipeline results can be found in these two articles.([paper1](https://www.nature.com/articles/s41477-017-0004-x),[paper2](https://academic.oup.com/plcell/article/32/4/888/6115756))
+9. A detailed explanation of the ssDripPipeline results can be found in these two articles([paper1](https://www.nature.com/articles/s41477-017-0004-x),[paper2](https://academic.oup.com/plcell/article/32/4/888/6115756)).
 ## Citing this work
