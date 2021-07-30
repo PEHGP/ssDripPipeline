@@ -14,7 +14,7 @@ This pipeline is used to analyze ssDRIP-seq data. The following operations can b
 **DownstreamAnalysis**
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
-- Motif for peaks(used Homer)
+- Motif for peaks(used HOMER)
 - Peaks length distribution
 - GCskew and ATskew
 - Sense and Antisense metaplot
@@ -82,7 +82,7 @@ If you copy the following json configuration file, please delete the comments, b
         "SeqDataPath":"/data/yeat/cleandata/",
         //bowtie2-build outputs, it must be an absolute path. GenomeIndex indicates the prefix name of bowtie2-build results.
         "GeomeIndex":"/data/yeast/genome/GenomeIndex",
-        //Effective genome size, it used for peak calling, normalization, and peaks proportion calculation.
+        //Effective genome size, it used for peak calling, normalization and peaks proportion calculation.
         "GenomeSize":"12345",
         //Threads of some third-party software.
         "Thread":"10",
@@ -132,28 +132,92 @@ SampleB	SampleB_rep2	SampleB_rep2_R1.fastq.gz	SampleB_rep2_R2.fastq.gz	SampleB_r
 ```
 ## Outputs
 ```
-
-├── Callus1
-│   ├── Callus1_align.info
-│   ├── Callus1_fwd.bam
-│   ├── Callus1_fwd.bam.bai
-│   ├── Callus1_fwd.bw
-│   ├── Callus1_fwd.gz
-│   ├── Callus1_fwd_nucl
+├── SampleA_rep1
+│   ├── SampleA_rep1_fwd_nucleus_norm.bw
+│   ├── SampleA_rep1_fwd_peaks.bed
+│   ├── SampleA_rep1_nucleus_norm.bw
+│   ├── SampleA_rep1_peaks.bed
+│   ├── SampleA_rep1_pip.sh #Scripts used in BaseAnalysis
+│   ├── SampleA_rep1_rev_nucleus_norm.bw
+│   ├── SampleA_rep1_rev_peaks.bed
+│   ├── SampleA_rep1_scale.xls
+├── SampleA_rep2
+├── SampleB_rep1
+├── SampleB_rep2
+├── test_deseq #Analysis results of DESeq2. *_anno.xls is the result of difference analysis. *_norm_anno.xls is the normalized R-loop abundance. *_counts_final_anno.xls is the original read counts.
+│   ├── all #No split strand
+│   │   ├── merge_test.bed
+│   │   ├── test_Callus_Flagleaf_diffexpr_results_anno.xls
+│   │   ├── test_Callus_Flagleaf_diffexpr_results.xls
+│   │   ├── test_Callus_Spike_diffexpr_results_anno.xls
+│   │   ├── test_Callus_Spike_diffexpr_results.xls
+│   │   ├── test_counts_final_anno.xls
+│   │   ├── test_counts_final.xls
+│   │   ├── test_counts.npz
+│   │   ├── test_counts.xls
+│   │   ├── test_deseq.r #Scripts used in DESeq2
+│   │   ├── test_deseq_scale.txt
+│   │   ├── test_norm_anno.xls
+│   │   ├── test_norm.xls
+│   │   ├── test_pca_deseq2.pdf
+│   │   ├── test_Spike_Flagleaf_diffexpr_results_anno.xls
+│   │   └── test_Spike_Flagleaf_diffexpr_results.xls
+│   ├── fwd #Fwd strand
+│   └── rev #Rev strand
+├── test_analysis # The results of DownstreamAnalysis
+│   ├── cluster
+│   ├── correlation
+│   ├── motif
+│   ├── peaks_content_distribution
+│   │   ├── test_peaks_content_distribution.xls
+│   │   ├── tss_150.bed
+│   │   └── tts_150.bed
+│   ├── peaks_length_distribution
+│   │   └── test_peaks_length_distribution.npy
+│   ├── sense_antisense
+│   │   ├── SampleA_rep1_antisense.gz
+│   │   ├── SampleA_rep1_sense.gz
+│   │   ├── SampleA_rep2_antisense.gz
+│   │   ├── SampleA_rep2_sense.gz
+│   │   ├── SampleB_rep1_antisense.gz
+│   │   ├── SampleB_rep1_sense.gz
+│   │   ├── SampleB_rep2_antisense.gz
+│   │   └── SampleB_rep2_sense.gz
+│   └── skew
+│       ├── SampleA_rep1_fwd_GCATSkew.gz
+│       ├── SampleA_rep1_GCATSkew.gz
+│       ├── SampleA_rep1_rev_GCATSkew.gz
+│       ├── SampleA_rep2_fwd_GCATSkew.gz
+│       ├── SampleA_rep2_GCATSkew.gz
+│       ├── SampleA_rep2_rev_GCATSkew.gz
+│       ├── SampleB_rep1_fwd_GCATSkew.gz
+│       ├── SampleB_rep1_GCATSkew.gz
+│       ├── SampleB_rep1_rev_GCATSkew.gz
+│       ├── SampleB_rep2_fwd_GCATSkew.gz
+│       ├── SampleB_rep2_GCATSkew.gz
+│       ├── SampleB_rep2_rev_GCATSkew.gz
+│       ├── gene_GCATSkew.gz
+│       ├── test_ATSkew.bw
+│       └── test_GCSkew.bw
+├── test_stat.xls #Sample statistics
+├── DripConfig.json
+├── filter.txt #DripConfig[FilterChromFile]
+├── test_ana.sh #Scripts used in DownstreamAnalysis
+└── test_bwscale.xls #Scale factor for normalization
 ```
 ## Third-party software
 The following software is used by this pipeline. When installing ssDripPipeline, these software will be installed automatically, and you do not need to install them yourself.
-- bowtie2
-- picard
-- samtools
-- bedtools
-- deepTools
-- MACS2
-- Homer
-- DESeq2
-- mfuzz
-- bedGraphToBigWig
-## Something
+- [Bowtie2](https://github.com/BenLangmead/bowtie2)
+- [Picard](https://broadinstitute.github.io/picard/)
+- [Samtools](http://www.htslib.org/)
+- [BEDTools](https://bedtools.readthedocs.io/en/latest/index.html)
+- [deepTools](https://deeptools.readthedocs.io/en/develop/)
+- [MACS2](http://github.com/taoliu/MACS/)
+- [HOMER](http://homer.ucsd.edu/homer/)
+- [DESeq2](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html)
+- [Mfuzz](https://www.bioconductor.org/packages/release/bioc/html/Mfuzz.html)
+- [bedGraphToBigWig](http://rohsdb.cmb.usc.edu/goldenPath/help/bigWig.html)
+## Others
 1. Only supports paired-end sequencing data.
 2. ssDripPipeline does not include quality control, adapter cutting and tail trimming.
 3. [Effective genome size](https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html)
