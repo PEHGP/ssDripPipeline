@@ -14,7 +14,7 @@ This pipeline is used to analyze ssDRIP-seq data. The following operations can b
 **DownstreamAnalysis**
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
-- Motif for peaks
+- Motif for peaks(used Homer)
 - Peaks length distribution
 - GCskew and ATskew
 - Sense and Antisense metaplot
@@ -69,7 +69,8 @@ Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ssDRIPSeqAnalysis.py DripConfig.json AllPip
 ```
 ## Inputs
-ssDRIPSeqAnalysis.py requires a configuration file in json format as input.\
+ssDRIPSeqAnalysis.py requires a configuration file in json format as input.
+
 If you copy the following json configuration file, please delete the comments, because json does not support comments.
 ```
 {
@@ -99,9 +100,9 @@ If you copy the following json configuration file, please delete the comments, b
         "ControlSample":"hehe",
         //Bed file of gene. The absolute path cannot be missing.
         "GeneBeb":"/data/yeast/genome/gene.bed",
-        //
+        //Distance upstream of the start site of the regions and distance downstream of the end site of the regions. Used for skew metaplot and sense/antisense metaplot.
         "MetaplotExtend":"1000",
-        //
+        //TSS/TTS left and right extension distance. TSS extends a certain distance from left and right as a promoter region. TTS extends a certain distance from left and right as a terminator region.
         "ContentExtend":"150",
         //The name of the chromosome in the fasta file of the Escherichia coli genome. If you do not do spike-in normalization, please ignore this.
         "SpikeNameList":["Ecoli"],
@@ -112,6 +113,22 @@ If you copy the following json configuration file, please delete the comments, b
         //How many base pairs to step before creating a new window. This parameter is used together with the win parameter to calculate ATskew and GCskew.
         "Step":"50"
 }
+```
+The target file format is as follows:
+
+If you don’t use spike-in, the target file will contain four columns. Each column is separated by Tab. The first column is the group name. The second column is the sample name. Repeat samples have the same group name. The third and fourth columns are paired-end sequencing data in fastq format.
+```
+SampleA	SampleA_rep1	SampleA_rep1_R1.fastq.gz	SampleA_rep1_R2.fastq.gz
+SampleA	SampleA_rep2	SampleA_rep2_R1.fastq.gz	SampleA_rep2_R2.fastq.gz
+SampleB	SampleB_rep1	SampleB_rep1_R1.fastq.gz	SampleB_rep1_R2.fastq.gz
+SampleB	SampleB_rep2	SampleB_rep2_R1.fastq.gz	SampleB_rep2_R2.fastq.gz
+```
+If you use spike-in, the targe file will contain seven columns. The first four columns are the same as above. The fifth column is the sample name of the input. The sixth and seventh columns are the paired-end sequencing data of input.
+```
+SampleA	SampleA_rep1	SampleA_rep1_R1.fastq.gz	SampleA_rep1_R2.fastq.gz	SampleA_rep1_input	SampleA_rep1_input_R1.fastq.gz	SampleA_rep1_input_R2.fastq.gz
+SampleA	SampleA_rep2	SampleA_rep2_R1.fastq.gz	SampleA_rep2_R2.fastq.gz	SampleA_rep2_input	SampleA_rep2_input_R1.fastq.gz	SampleA_rep2_input_R2.fastq.gz
+SampleB	SampleB_rep1	SampleB_rep1_R1.fastq.gz	SampleB_rep1_R2.fastq.gz	SampleB_rep1_input	SampleB_rep1_input_R1.fastq.gz	SampleB_rep1_input_R2.fastq.gz
+SampleB	SampleB_rep2	SampleB_rep2_R1.fastq.gz	SampleB_rep2_R2.fastq.gz	SampleB_rep2_input	SampleB_rep2_input_R1.fastq.gz	SampleB_rep2_input_R2.fastq.gz
 ```
 ## Outputs
 ```
@@ -130,7 +147,7 @@ The following software is used by this pipeline. When installing ssDripPipeline,
 - picard
 - samtools
 - bedtools
-- deeptools
+- deepTools
 - MACS2
 - Homer
 - DESeq2
