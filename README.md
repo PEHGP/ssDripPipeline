@@ -40,25 +40,29 @@ ssDRIPSeqAnalysis.py
 Usage:
 
 ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAnalysis|AllPip>
+
 ```
 ## Commands
-**ssDRIPSeqAnalysis.py** contains four subcommands\
-\
+**ssDRIPSeqAnalysis.py** contains four subcommands:\
+
 **BaseAnalysis**
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
 **DeseqAnalysis**\
+
 The results of **BaseAnalysis** is required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
 ```
 **DownstreamAnalysis**\
+
 The results of **DeseqAnalysis** and **BaseAnalysis** are required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
 ```
 **AllPip**\
+
 Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json AllPip
