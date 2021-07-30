@@ -1,15 +1,14 @@
 # ssDripPipeline
-## Introduction
 This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:\
-BaseAnalysis
+**BaseAnalysis**
 - Alignment of reads to reference sequences
 - Duplicates removing
 - Strand splitting
 - Peak calling
-- Normalized bam to bigwig file
-DeseqAnalysis
-- DESeq2 for peaks(merge the peaks of all samples)
-DownstreamAnalysis
+- Normalized bam to bigwig file\
+**DeseqAnalysis**
+- DESeq2 for peaks(merge the peaks of all samples)\
+**DownstreamAnalysis**
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
 - Motif for peaks
@@ -17,9 +16,8 @@ DownstreamAnalysis
 - GCskew and ATskew
 - Sense and Antisense metaplot
 - Peaks content distribution(the proportion of peaks in TSS,TTS and gene body region)
-## Documentation
-### Installation
-ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/intro.html) package manager [Bioconda](https://bioconda.github.io/). To install ssDripPipeline using Bioconda, download and install Anaconda Python 3.7, following the instructions at: https://www.anaconda.com/distribution/.\
+## Installation
+ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/intro.html) package manager [Bioconda](https://bioconda.github.io/). To install ssDripPipeline using Bioconda, download and install Anaconda Python 3.7, following the instructions at: https://www.anaconda.com/distribution/. \
 To install ssDripPipeline into the current conda environment:
 ```bash
 conda install -c bioconda ssDripPipeline
@@ -32,38 +30,39 @@ Activate your conda environment:
 ```bash
 conda activate ssDripPipeline_env
 ```
-Verify that ssDripPipeline_env is installed using the command:
+Verify that ssDripPipeline is installed using the command:
 ```
 ssDRIPSeqAnalysis.py
 
 Usage:
+
 ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAnalysis|AllPip>
 ```
-### Commands
-`ssDRIPSeqAnalysis.py` contains four subcommands\
-`BaseAnalysis`
+## Commands
+**ssDRIPSeqAnalysis.py** contains four subcommands\\
+**BaseAnalysis**
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
-`DeseqAnalysis`(The results of `BaseAnalysis` is required)
+**DeseqAnalysis**(The results of **BaseAnalysis** is required)
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
 ```
-`DownstreamAnalysis`(The results of `DeseqAnalysis` and `BaseAnalysis` are required)
+**DownstreamAnalysis**(The results of **DeseqAnalysis** and **BaseAnalysis** are required)
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
 ```
-`AllPip`\
+**AllPip**
 Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json AllPip
 ```
-### Inputs
+## Inputs
 ssDRIPSeqAnalysis.py requires a configuration file in json format as input.\
 If you copy the following json configuration file, please delete the comments, because json does not support comments.
-```json
+```
 {
-		//The name of your project.
+        //The name of your project.
         "ProjectName":"test",
         //A file that contains the sample name and its corresponding data.
         "Target":"target",
@@ -103,7 +102,7 @@ If you copy the following json configuration file, please delete the comments, b
         "Step":"50"
 }
 ```
-### Outputs
+## Outputs
 ```
 
 ├── Callus1
@@ -114,7 +113,7 @@ If you copy the following json configuration file, please delete the comments, b
 │   ├── Callus1_fwd.gz
 │   ├── Callus1_fwd_nucl
 ```
-### Third-party software
+## Third-party software
 The following software is used by this pipeline. When installing ssDripPipeline, these software will be installed automatically, and you do not need to install them yourself.
 - bowtie2
 - picard
@@ -126,7 +125,7 @@ The following software is used by this pipeline. When installing ssDripPipeline,
 - DESeq2
 - mfuzz
 - bedGraphToBigWig
-### Something
+## Something
 1. Only supports paired-end sequencing data.
 2. ssDripPipeline does not include quality control, adapter cutting and tail trimming.
 3. [Effective genome size](https://deeptools.readthedocs.io/en/latest/content/feature/effectiveGenomeSize.html)
