@@ -20,7 +20,8 @@ This pipeline is used to analyze ssDRIP-seq data. The following operations can b
 - Sense and Antisense metaplot
 - Peaks content distribution(the proportion of peaks in TSS,TTS and gene body region)
 ## Installation
-ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/intro.html) package manager [Bioconda](https://bioconda.github.io/). To install ssDripPipeline using Bioconda, download and install Anaconda Python 3.7, following the instructions at: https://www.anaconda.com/distribution/. \
+ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/intro.html) package manager [Bioconda](https://bioconda.github.io/). To install ssDripPipeline using Bioconda, download and install Anaconda Python 3.7, following the instructions at: https://www.anaconda.com/distribution/.
+
 To install ssDripPipeline into the current conda environment:
 ```bash
 conda install -c bioconda ssDripPipeline
@@ -43,25 +44,25 @@ ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAna
 
 ```
 ## Commands
-**ssDRIPSeqAnalysis.py** contains four subcommands:\
+**ssDRIPSeqAnalysis.py** contains four subcommands:
 
 **BaseAnalysis**
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
-**DeseqAnalysis**\
+**DeseqAnalysis**
 
 The results of **BaseAnalysis** is required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
 ```
-**DownstreamAnalysis**\
+**DownstreamAnalysis**
 
 The results of **DeseqAnalysis** and **BaseAnalysis** are required
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
 ```
-**AllPip**\
+**AllPip**
 
 Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ```bash
