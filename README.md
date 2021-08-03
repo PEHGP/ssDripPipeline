@@ -50,7 +50,7 @@ ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAna
 ## Commands
 **ssDRIPSeqAnalysis.py** contains four subcommands:
 
-<kbd>**BaseAnalysis**</kbd>
+**BaseAnalysis**
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
