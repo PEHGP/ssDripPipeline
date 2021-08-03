@@ -5,17 +5,17 @@
 # ssDripPipeline
 This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:
 
-**BaseAnalysis**
+<kbd>**BaseAnalysis**</kbd>
 - Alignment of reads to reference sequences
 - Duplicates removing
 - Strand splitting
 - Peak calling
 - Normalized bam to bigwig file
 
-**DeseqAnalysis**
+<kbd>**DeseqAnalysis**</kbd>
 - DESeq2 for peaks(merge the peaks of all samples)
 
-**DownstreamAnalysis**
+<kbd>**DownstreamAnalysis**</kbd>
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
 - Motif for peaks(used HOMER)
