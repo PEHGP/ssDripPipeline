@@ -5,17 +5,17 @@
 # ssDripPipeline
 This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:
 
-<kbd>**BaseAnalysis**</kbd>
+**BaseAnalysis**
 - Alignment of reads to reference sequences
 - Duplicates removing
 - Strand splitting
 - Peak calling
 - Normalized bam to bigwig file
 
-<kbd>**DeseqAnalysis**</kbd>
+**DeseqAnalysis**
 - DESeq2 for peaks(merge the peaks of all samples)
 
-<kbd>**DownstreamAnalysis**</kbd>
+**DownstreamAnalysis**
 - Mfuzz cluster(peak with qvalue<=0.01)
 - Correlation of samples
 - Motif for peaks(used HOMER)
@@ -50,7 +50,7 @@ ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAna
 ## Commands
 **ssDRIPSeqAnalysis.py** contains four subcommands:
 
-**BaseAnalysis**
+<kbd>**BaseAnalysis**</kbd>
 ```bash
 ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
