@@ -28,19 +28,19 @@ ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/i
 
 To install ssDripPipeline into the current conda environment:
 ```bash
-conda install -c bioconda ssdrippipeline
+$ conda install -c bioconda ssdrippipeline
 ```
 Alternately, to create a new environment named `ssDripPipeline_env` with ssDripPipeline:
 ```bash
-conda create -n ssDripPipeline_env -c bioconda ssdrippipeline python=3.7
+$ conda create -n ssDripPipeline_env -c bioconda ssdrippipeline python=3.7
 ```
 Activate your conda environment:
 ```bash
-conda activate ssDripPipeline_env
+$ conda activate ssDripPipeline_env
 ```
 Verify that ssDripPipeline is installed using the command:
 ```
-ssDRIPSeqAnalysis.py
+$ ssDRIPSeqAnalysis.py
 
 Usage:
 
@@ -52,25 +52,25 @@ ssDRIPSeqAnalysis.py <DripConfig.json> <BaseAnalysis|DeseqAnalysis|DownstreamAna
 
 **BaseAnalysis**
 ```bash
-ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
+$ ssDRIPSeqAnalysis.py DripConfig.json BaseAnalysis
 ```
 **DeseqAnalysis**
 
 The results of **BaseAnalysis** is required
 ```bash
-ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
+$ ssDRIPSeqAnalysis.py DripConfig.json DeseqAnalysis
 ```
 **DownstreamAnalysis**
 
 The results of **DeseqAnalysis** and **BaseAnalysis** are required
 ```bash
-ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
+$ ssDRIPSeqAnalysis.py DripConfig.json DownstreamAnalysis
 ```
 **AllPip**
 
 Execute BaseAnalysis, DeseqAnalysis, DownstreamAnalysis in turn
 ```bash
-ssDRIPSeqAnalysis.py DripConfig.json AllPip
+$ ssDRIPSeqAnalysis.py DripConfig.json AllPip
 ```
 ## Inputs
 ssDRIPSeqAnalysis.py requires a configuration file in json format as input.
