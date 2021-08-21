@@ -100,7 +100,7 @@ If you copy the following json configuration file, please delete the comments, b
         "RepeatNum":"10",
         //The file contains two columns. The first column is the chromosome name, and the second column is the chromosome length. The chromosome name must be consistent with the name in the genome fasta file. The filtered chromosomes should not be included in this file. In addition, the absolute path cannot be missing.
         "ChromSize":"/data/yeast/Analysis/chrom.size",
-        //Fasta file of genome. The absolute path cannot be missing.
+        //Fasta file of genome for GetATGCSkewBw and FindMotif. The absolute path cannot be missing.
         "GenomeFastaFile":"/data/yeast/genome/Genome.fasta",
         //If there is no control sample for DESeq2 analysis, you can write a random name, such as hehe.
         "ControlSample":"hehe",
