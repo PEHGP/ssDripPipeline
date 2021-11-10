@@ -1,6 +1,6 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/ssdrippipeline/badges/latest_release_date.svg)](https://anaconda.org/bioconda/ssdrippipeline)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/ssdrippipeline/badges/downloads.svg)](https://anaconda.org/bioconda/ssdrippipeline)
-[![Anaconda-Server Badge](https://anaconda.org/bioconda/ssdrippipeline/badges/installer/conda.svg)](https://conda.anaconda.org/bioconda)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/ssdrippipeline/README.html)
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/ssdrippipeline/badges/license.svg)](https://anaconda.org/bioconda/ssdrippipeline)
 # ssDripPipeline
 This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:
