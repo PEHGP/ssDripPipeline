@@ -14,6 +14,7 @@ This pipeline is used to analyze ssDRIP-seq data. The following operations can b
 
 **DeseqAnalysis**
 - DESeq2 for peaks(merge the peaks of all samples)
+- Peaks annotation
 
 **DownstreamAnalysis**
 - Mfuzz cluster(difference peak with qvalue<=0.01)
