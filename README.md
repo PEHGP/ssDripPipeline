@@ -4,7 +4,7 @@
 [![Anaconda-Server Badge](https://anaconda.org/bioconda/ssdrippipeline/badges/license.svg)](https://anaconda.org/bioconda/ssdrippipeline)
 # ssDripPipeline
 <p align="center">
-<img src="ssDripPipeline.jpg" alt="ssDripPipeline"/>
+<img src="https://github.com/PEHGP/ssDripPipeline/blob/master/ssDripPipeline.jpg" alt="ssDripPipeline"/>
 </p>
 This pipeline is used to analyze ssDRIP-seq data. The following operations can be automatically performed:
 
