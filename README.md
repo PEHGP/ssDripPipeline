@@ -88,7 +88,7 @@ If you copy the following json configuration file, please delete the comments, b
         //Path of sequencing data, it must be an absolute path.
         "SeqDataPath":"/data/yeat/cleandata/",
         //bowtie2-build outputs, it must be an absolute path. GenomeIndex indicates the prefix name of bowtie2-build results.
-        "GeomeIndex":"/data/yeast/genome/GenomeIndex",
+        "GenomeIndex":"/data/yeast/genome/GenomeIndex",
         //Effective genome size, it used for peak calling, normalization and peaks proportion calculation.
         "GenomeSize":"12345",
         //Threads of some third-party software.
@@ -106,7 +106,7 @@ If you copy the following json configuration file, please delete the comments, b
         //If there is no control sample for DESeq2 analysis, you can write a random name, such as hehe.
         "ControlSample":"hehe",
         //Bed file of gene. The absolute path cannot be missing.
-        "GeneBeb":"/data/yeast/genome/gene.bed",
+        "GeneBed":"/data/yeast/genome/gene.bed",
         //Distance upstream of the start site of the regions and distance downstream of the end site of the regions. Used for skew metaplot and sense/antisense metaplot.
         "MetaplotExtend":"1000",
         //TSS/TTS left and right extension distance. TSS extends a certain distance from left and right as a promoter region. TTS extends a certain distance from left and right as a terminator region.
