@@ -29,11 +29,11 @@ ssDripPipeline can be installed using the [conda](http://conda.pydata.org/docs/i
 
 To install ssDripPipeline into the current conda environment:
 ```bash
-$ conda install -c bioconda ssdrippipeline
+$ conda install -c conda-forge -c bioconda ssdrippipeline
 ```
 Alternately, to create a new environment named `ssDripPipeline_env` with ssDripPipeline:
 ```bash
-$ conda create -n ssDripPipeline_env -c bioconda ssdrippipeline python=3.7
+$ conda create -n ssDripPipeline_env  -c conda-forge -c bioconda ssdrippipeline python=3.7
 ```
 Activate your conda environment:
 ```bash

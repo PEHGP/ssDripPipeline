@@ -32,5 +32,5 @@ setup(
 		"pandas >= 1.0.1",
 		"biopython >=1.78",
 	],
-	zip_safe=True,
+	zip_safe=False,
 )
