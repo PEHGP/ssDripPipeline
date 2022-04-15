@@ -236,3 +236,6 @@ The following software is used by this pipeline. When installing ssDripPipeline,
 8. [Metaplot](https://deeptools.readthedocs.io/en/latest/content/tools/plotProfile.html)
 9. A detailed explanation of the ssDripPipeline results can be found in these two articles([paper1](https://www.nature.com/articles/s41477-017-0004-x),[paper2](https://academic.oup.com/plcell/article/32/4/888/6115756)).
 ## Citing this work
+```
+Wei Xu, Kuan Li, Qin Li, Shuai Li, Kunpeng Liu, Jinsong Zhou, Qianwen Sun. (2022). Quantitative, Convenient and Efficient Genome-wide R-loop Profiling by ssDRIP-seq in Multiple Organisms. Book chapter of “R-loops: Methods and Protocols”, edited by: Alexey Ruzov and Andres Aguilera, in the book series Methods in Molecular Biology. (Invited protocol, in press)
+```
