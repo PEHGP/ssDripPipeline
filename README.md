@@ -240,5 +240,6 @@ The following software is used by this pipeline. When installing ssDripPipeline,
 Wei Xu, Kuan Li, Qin Li, Shuai Li, Kunpeng Liu, Jinsong Zhou, Qianwen Sun. (2022). 
 Quantitative, Convenient and Efficient Genome-wide R-loop Profiling by ssDRIP-seq in Multiple Organisms. 
 Book chapter of “R-loops: Methods and Protocols”, 
-edited by: Alexey Ruzov and Andres Aguilera, in the book series Methods in Molecular Biology. (Invited protocol, in press)
+edited by: Alexey Ruzov and Andres Aguilera, in the book series Methods in Molecular Biology. 
+(Invited protocol, in press)
 ```
